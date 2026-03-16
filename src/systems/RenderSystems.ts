@@ -1,12 +1,15 @@
-import { Player } from "@/entities/player";
+import { Player } from "@/entities/Player";
+import type { ImageManager } from "@/managers/ImageManager";
 import { GRID_SIZE } from "@/utils/constants";
 
 export class RenderSystem {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  constructor(canvas: HTMLCanvasElement) {
+  imageManager: ImageManager;
+  constructor(canvas: HTMLCanvasElement, imageManager: ImageManager) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d")!;
+    this.imageManager = imageManager;
   }
 
   render(player: Player) {
@@ -15,8 +18,19 @@ export class RenderSystem {
     this.renderPlayer(player);
   }
   renderPlayer(player: Player) {
-    this.ctx.fillStyle = "red";
-    this.ctx.fillRect(player.x, player.y, player.width, player.height);
+    const playerImage = this.imageManager.get("player");
+    if (playerImage) {
+      this.ctx.drawImage(
+        playerImage,
+        player.x,
+        player.y,
+        player.width,
+        player.height,
+      );
+    } else {
+      this.ctx.fillStyle = "red";
+      this.ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
   }
   renderGrid() {
     this.ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";

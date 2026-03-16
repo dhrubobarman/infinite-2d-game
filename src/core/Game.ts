@@ -1,4 +1,5 @@
-import { Player } from "@/entities/player";
+import { Player } from "@/entities/Player";
+import { ImageManager } from "@/managers/ImageManager";
 import { RenderSystem } from "@/systems/RenderSystems";
 import { GAME_HEIGHT, GAME_WIDTH } from "@/utils/constants";
 
@@ -10,13 +11,19 @@ export class Game {
   player: Player;
   keys: Record<string, boolean>;
   lastTime: number = 0;
+  imageManager: ImageManager;
 
   constructor() {
     this.canvas = document.getElementById("gameCanvas")! as HTMLCanvasElement;
     this.ctx = this.canvas.getContext("2d")!;
     this.init();
-    this.renderSystem = new RenderSystem(this.canvas);
+
+    this.imageManager = new ImageManager();
+    this.imageManager.loadAll();
+
+    this.renderSystem = new RenderSystem(this.canvas, this.imageManager);
     this.player = new Player();
+
     this.keys = {};
   }
   init() {
