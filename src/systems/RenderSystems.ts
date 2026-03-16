@@ -1,3 +1,4 @@
+import { Player } from "@/entities/player";
 import { GRID_SIZE } from "@/utils/constants";
 
 export class RenderSystem {
@@ -8,9 +9,14 @@ export class RenderSystem {
     this.ctx = canvas.getContext("2d")!;
   }
 
-  render() {
+  render(player: Player) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.renderGrid();
+    this.renderPlayer(player);
+  }
+  renderPlayer(player: Player) {
+    this.ctx.fillStyle = "red";
+    this.ctx.fillRect(player.x, player.y, player.width, player.height);
   }
   renderGrid() {
     this.ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";

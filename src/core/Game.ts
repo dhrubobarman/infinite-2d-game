@@ -1,3 +1,4 @@
+import { Player } from "@/entities/player";
 import { RenderSystem } from "@/systems/RenderSystems";
 import { GAME_HEIGHT, GAME_WIDTH } from "@/utils/constants";
 
@@ -6,12 +7,14 @@ export class Game {
   ctx: CanvasRenderingContext2D;
   ratio = GAME_WIDTH / GAME_HEIGHT;
   renderSystem: RenderSystem;
+  player: Player;
 
   constructor() {
     this.canvas = document.getElementById("gameCanvas")! as HTMLCanvasElement;
     this.ctx = this.canvas.getContext("2d")!;
     this.init();
     this.renderSystem = new RenderSystem(this.canvas);
+    this.player = new Player();
   }
   init() {
     this.setupCanvas();
@@ -44,8 +47,8 @@ export class Game {
       this.canvas.style.margin = `${margin}px`;
     });
   }
-  gameloop(timeStamp: number) {
-    this.renderSystem.render();
+  gameloop(_timeStamp: number) {
+    this.renderSystem.render(this.player);
     requestAnimationFrame((t) => this.gameloop(t));
   }
 }
