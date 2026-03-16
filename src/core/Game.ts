@@ -8,6 +8,8 @@ export class Game {
   ratio = GAME_WIDTH / GAME_HEIGHT;
   renderSystem: RenderSystem;
   player: Player;
+  keys: Record<string, boolean>;
+  lastTime: number = 0;
 
   constructor() {
     this.canvas = document.getElementById("gameCanvas")! as HTMLCanvasElement;
@@ -15,11 +17,38 @@ export class Game {
     this.init();
     this.renderSystem = new RenderSystem(this.canvas);
     this.player = new Player();
+    this.keys = {};
   }
   init() {
     this.setupCanvas();
+    this.setupInput();
+
+    // start the game loop
+    this.lastTime = performance.now();
     requestAnimationFrame((t) => this.gameloop(t));
   }
+  setupInput() {
+    window.addEventListener("keydown", (e) => {
+      this.keys[e.key.toLowerCase()] = true;
+    });
+    window.addEventListener("keyup", (e) => {
+      this.keys[e.key.toLowerCase()] = false;
+    });
+  }
+
+  gameloop(timeStamp: number) {
+    const dt = Math.min((timeStamp - this.lastTime) / 1000, 0.1);
+    this.lastTime = timeStamp;
+    this.update(dt);
+    this.renderSystem.render(this.player);
+    requestAnimationFrame((t) => this.gameloop(t));
+  }
+
+  update(dt: number) {
+    this.player.update(dt, this.keys);
+  }
+
+  // canvas setup
   setupCanvas() {
     this.resizeCanvas();
     window.addEventListener("resize", this.resizeCanvas.bind(this));
@@ -46,9 +75,5 @@ export class Game {
       this.canvas.style.height = `${h}px`;
       this.canvas.style.margin = `${margin}px`;
     });
-  }
-  gameloop(_timeStamp: number) {
-    this.renderSystem.render(this.player);
-    requestAnimationFrame((t) => this.gameloop(t));
   }
 }

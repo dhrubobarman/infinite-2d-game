@@ -19,3 +19,6 @@ export const createElement = <T extends keyof HTMLElementTagNameMap>(
   if (parent) parent.appendChild(element);
   return element;
 };
+
+export const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
