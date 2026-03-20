@@ -18,6 +18,13 @@ export class Player {
     // Multipliers (for player)
     this.speedMultiplier = 1;
   }
+
+  reset() {
+    this.x = (GAME_WIDTH - this.width) / 2;
+    this.y = (GAME_HEIGHT - this.height) / 2;
+    this.speed = 300;
+    this.speedMultiplier = 1;
+  }
   update(dt: number, keys: Record<string, boolean>) {
     let dx = 0,
       dy = 0;

@@ -33,7 +33,7 @@ export class RenderSystem {
     }
   }
   renderGrid() {
-    this.ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+    this.ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
     this.ctx.lineWidth = 1;
     this.ctx.beginPath();
     for (let i = 0; i < this.canvas.width; i += GRID_SIZE) {

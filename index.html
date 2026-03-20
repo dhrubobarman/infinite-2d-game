@@ -9,6 +9,19 @@
   <body>
     <div id="gameContainer">
       <canvas id="gameCanvas"></canvas>
+      <div id="mainMenu" class="ui-panel active">
+        <h1>Game Starter Kit</h1>
+        <button id="playBtn">Play</button>
+        <div class="text-[12px] mt-4">
+          <p>WASD - Move</p>
+          <p>ESC - Pause</p>
+        </div>
+      </div>
+       <div id="pauseMenu" class="ui-panel ">
+        <h2>Paused</h2>
+        <button id="resumeBtn">RESUME</button>
+        <button id="quitBtn">QUIT TO MENU</button>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

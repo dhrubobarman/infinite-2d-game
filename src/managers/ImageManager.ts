@@ -19,7 +19,6 @@ export class ImageManager {
       this.images[name].loaded = true;
       console.log(
         `Loaded ${name}, path: ${path}, width: ${img.width}, height: ${img.height}`,
-        img,
       );
     };
     img.onerror = () => {
