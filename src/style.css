@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  transition-behavior: allow-discrete;
+  /* transition-behavior: allow-discrete; */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -24,8 +24,7 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    transition-behavior: allow-discrete;
-    transition-behavior: allow-discrete;
+    /* transition-behavior: allow-discrete; */
   }
   body {
     overflow: hidden;
@@ -67,16 +66,16 @@ body {
     box-shadow: 0 0 30px rgb(74 158 255/ 0.3);
     z-index: 1000;
     display: none;
-    @starting-style {
+    /* @starting-style {
       opacity: 1;
-    }
+    } */
 
     &.active {
       display: block;
       opacity: 1;
-      @starting-style {
+      /* @starting-style {
         opacity: 0;
-      }
+      } */
     }
     h1 {
       font-weight: 600;
@@ -116,4 +115,23 @@ body {
 
 #loadingScreen {
   padding: 50px;
+}
+
+#timer {
+  transition-property: display, opacity;
+  position: absolute;
+  top: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #4a9eff;
+  font-size: 40px;
+  text-shadow: 0 0 20px rgb(74 158 255 / 0.9);
+  font-family: "Courier New" monospace;
+  font-weight: 700;
+  z-index: 1000;
+  display: none;
+  pointer-events: none;
+  /* @starting-style {
+    opacity: 0;
+  } */
 }

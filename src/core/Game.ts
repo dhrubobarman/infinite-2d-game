@@ -17,10 +17,12 @@ export class Game {
   state: "playing" | "menu" | "paused" | (string & {});
   private rafId: number | null = null;
   audioManager: AudioManager;
+  time: number;
 
   constructor() {
     this.canvas = document.getElementById("gameCanvas")! as HTMLCanvasElement;
     this.state = "menu";
+    this.time = 0;
 
     this.imageManager = new ImageManager();
     this.audioManager = new AudioManager();
@@ -53,6 +55,10 @@ export class Game {
     }
     const dt = Math.min((timeStamp - this.lastTime) / 1000, 0.1);
     this.lastTime = timeStamp;
+    if (this.state === "playing") {
+      this.time += dt;
+      this.uiManager.updateTimer(this.time);
+    }
     this.update(dt);
     this.renderSystem.render(this.state, this.player);
     this.rafId = requestAnimationFrame((t) => this.gameloop(t));
@@ -66,12 +72,14 @@ export class Game {
   resetGame() {
     this.player.reset();
     this.lastTime = performance.now();
+    this.time = 0;
   }
   startGame() {
     this.audioManager.play("button_click");
     this.state = "playing";
     this.uiManager.hideAllPanels();
     this.resetGame();
+    this.uiManager.showTimer();
   }
   pause() {
     this.audioManager.play("pause");
@@ -87,6 +95,7 @@ export class Game {
     this.audioManager.play("button_click");
     this.state = "menu";
     this.uiManager.hideAllPanels();
+    this.uiManager.hideTimer();
     this.uiManager.showPanel("mainMenu");
   }
   private setupInput() {
