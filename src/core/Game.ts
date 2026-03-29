@@ -40,8 +40,7 @@ export class Game {
       this.audioManager.loadAll(),
     ]);
 
-    this.uiManager.hideLoadingScreen();
-    this.uiManager.showMainMenu();
+    this.uiManager.showPanel("mainMenu");
     this.setupCanvas();
     this.setupInput();
     // start the game loop
@@ -69,6 +68,7 @@ export class Game {
     this.lastTime = performance.now();
   }
   startGame() {
+    this.audioManager.play("button_click");
     this.state = "playing";
     this.uiManager.hideAllPanels();
     this.resetGame();
@@ -76,18 +76,18 @@ export class Game {
   pause() {
     this.audioManager.play("pause");
     this.state = "paused";
-    this.uiManager.showPausePanel();
+    this.uiManager.showPanel("pauseMenu");
   }
   resume() {
     this.audioManager.play("unpause");
     this.state = "playing";
-    this.uiManager.hidePausePanel();
+    this.uiManager.hideAllPanels();
   }
-
   returnToMenu() {
+    this.audioManager.play("button_click");
     this.state = "menu";
     this.uiManager.hideAllPanels();
-    this.uiManager.showMainMenu();
+    this.uiManager.showPanel("mainMenu");
   }
   private setupInput() {
     window.addEventListener("keydown", this.handleKeyDown);
