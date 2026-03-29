@@ -10,23 +10,24 @@ export class ImageManager {
     this.images = {};
   }
 
-  load(name: string, path: string) {
-    const img = new Image();
-    img.src = path;
-    img.crossOrigin = "anonymous";
-    this.images[name] = { img, loaded: false };
-    img.onload = () => {
-      this.images[name].loaded = true;
-      console.log(
-        `Loaded ${name}, path: ${path}, width: ${img.width}, height: ${img.height}`,
-      );
-    };
-    img.onerror = () => {
-      this.images[name].loaded = false;
-      console.error(
-        `Failed to load ${name}, path: ${path} (will use fallback)`,
-      );
-    };
+  load(name: string, path: string): Promise<Boolean> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = path;
+      img.crossOrigin = "anonymous";
+      this.images[name] = { img, loaded: false };
+      img.onload = () => {
+        this.images[name].loaded = true;
+        resolve(true);
+      };
+      img.onerror = () => {
+        this.images[name].loaded = false;
+        console.error(
+          `Failed to load ${name}, path: ${path} (will use fallback)`,
+        );
+        resolve(false);
+      };
+    });
   }
   get(name: AvailableImageNames) {
     return this.images[name]?.loaded ? this.images[name].img : null;
@@ -34,9 +35,21 @@ export class ImageManager {
   isLoaded(name: AvailableImageNames) {
     return this.images[name] ? this.images[name].loaded : false;
   }
-  loadAll() {
+  async loadAll() {
+    const promises: Promise<Boolean>[] = [];
     for (const { name, path } of availableImages) {
-      this.load(name, path);
+      promises.push(this.load(name, path));
     }
+    await Promise.all(promises);
+  }
+
+  destroy() {
+    for (const name in this.images) {
+      const img = this.images[name].img;
+      img.onload = null;
+      img.onerror = null;
+      img.src = "";
+    }
+    this.images = {};
   }
 }

@@ -1,12 +1,12 @@
 import { Player } from "@/entities/Player";
+import { AudioManager } from "@/managers/AudioManager";
 import { ImageManager } from "@/managers/ImageManager";
-import { UIManager } from "@/managers/UiManager";
+import { UIManager } from "@/managers/UIManager";
 import { RenderSystem } from "@/systems/RenderSystems";
 import { GAME_HEIGHT, GAME_WIDTH } from "@/utils/constants";
 
 export class Game {
   canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
   ratio = GAME_WIDTH / GAME_HEIGHT;
   renderSystem: RenderSystem;
   player: Player;
@@ -16,15 +16,14 @@ export class Game {
   uiManager: UIManager;
   state: "playing" | "menu" | "paused" | (string & {});
   private rafId: number | null = null;
+  audioManager: AudioManager;
 
   constructor() {
     this.canvas = document.getElementById("gameCanvas")! as HTMLCanvasElement;
-    this.ctx = this.canvas.getContext("2d")!;
-    this.init();
     this.state = "menu";
 
     this.imageManager = new ImageManager();
-    this.imageManager.loadAll();
+    this.audioManager = new AudioManager();
 
     this.renderSystem = new RenderSystem(this.canvas, this.imageManager);
     this.player = new Player();
@@ -32,11 +31,19 @@ export class Game {
     this.uiManager = new UIManager(this);
 
     this.keys = {};
+
+    this.init();
   }
-  private init() {
+  private async init() {
+    await Promise.all([
+      this.imageManager.loadAll(),
+      this.audioManager.loadAll(),
+    ]);
+
+    this.uiManager.hideLoadingScreen();
+    this.uiManager.showMainMenu();
     this.setupCanvas();
     this.setupInput();
-
     // start the game loop
     this.lastTime = performance.now();
     this.rafId = requestAnimationFrame((t) => this.gameloop(t));
@@ -48,22 +55,13 @@ export class Game {
     const dt = Math.min((timeStamp - this.lastTime) / 1000, 0.1);
     this.lastTime = timeStamp;
     this.update(dt);
-    this.render();
+    this.renderSystem.render(this.state, this.player);
     this.rafId = requestAnimationFrame((t) => this.gameloop(t));
   }
 
   private update(dt: number) {
     if (this.state !== "playing") return;
     this.player.update(dt, this.keys);
-  }
-
-  private render() {
-    if (this.state === "menu") {
-      this.ctx.fillStyle = "#0f3460";
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    } else {
-      this.renderSystem.render(this.player);
-    }
   }
 
   resetGame() {
@@ -76,10 +74,12 @@ export class Game {
     this.resetGame();
   }
   pause() {
+    this.audioManager.play("pause");
     this.state = "paused";
     this.uiManager.showPausePanel();
   }
   resume() {
+    this.audioManager.play("unpause");
     this.state = "playing";
     this.uiManager.hidePausePanel();
   }
@@ -163,9 +163,6 @@ export class Game {
 
     // clear input state
     this.keys = {};
-
-    // optional: clear canvas
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     // optional: cleanup UI
     if (this.uiManager && "destroy" in this.uiManager) {

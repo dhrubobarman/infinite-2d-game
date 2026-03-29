@@ -9,6 +9,8 @@ export class UIManager {
 
   mainMenu: HTMLDivElement | null = null;
   pauseMenu: HTMLDivElement | null = null;
+  loadingScreen: HTMLDivElement | null = null;
+
   constructor(game: Game) {
     this.game = game;
     this.getAllElements();
@@ -24,15 +26,20 @@ export class UIManager {
     // containers
     this.mainMenu = document.querySelector<HTMLDivElement>("#mainMenu")!;
     this.pauseMenu = document.querySelector<HTMLDivElement>("#pauseMenu")!;
+    this.loadingScreen =
+      document.querySelector<HTMLDivElement>("#loadingScreen");
   }
 
   private handleStartGame = () => {
+    this.game.audioManager.play("button_click");
     this.game.startGame();
   };
   private handleResume = () => {
+    this.game.audioManager.play("button_click");
     this.game.resume();
   };
   private handleQuit = () => {
+    this.game.audioManager.play("button_click");
     this.game.returnToMenu();
   };
 
@@ -40,6 +47,11 @@ export class UIManager {
     this.playBtn?.addEventListener("click", this.handleStartGame);
     this.resumeBtn?.addEventListener("click", this.handleResume);
     this.quitBtn?.addEventListener("click", this.handleQuit);
+    document.querySelectorAll("button").forEach((btn) => {
+      btn.onmouseenter = () => {
+        this.game.audioManager.play("button_hover");
+      };
+    });
   }
   hideAllPanels() {
     document
@@ -57,6 +69,9 @@ export class UIManager {
   }
   hideMainMenu() {
     this.mainMenu?.classList.remove("active");
+  }
+  hideLoadingScreen() {
+    this.loadingScreen?.classList.remove("active");
   }
 
   destroy() {

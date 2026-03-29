@@ -1,3 +1,4 @@
+import type { Game } from "@/core/Game";
 import { Player } from "@/entities/Player";
 import type { ImageManager } from "@/managers/ImageManager";
 import { GRID_SIZE } from "@/utils/constants";
@@ -12,10 +13,14 @@ export class RenderSystem {
     this.imageManager = imageManager;
   }
 
-  render(player: Player) {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.renderGrid();
-    this.renderPlayer(player);
+  render(state: Game["state"], player: Player) {
+    if (state === "menu") {
+      this.renderMenuBackground();
+    } else {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.renderGrid();
+      this.renderPlayer(player);
+    }
   }
   renderPlayer(player: Player) {
     const playerImage = this.imageManager.get("player");
@@ -46,5 +51,9 @@ export class RenderSystem {
     }
     this.ctx.stroke();
     this.ctx.closePath();
+  }
+  renderMenuBackground() {
+    this.ctx.fillStyle = "#0f3460";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }
