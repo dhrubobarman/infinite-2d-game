@@ -16,6 +16,7 @@ export class ImageManager {
       this.images[name] = { img, loaded: false };
       img.onload = () => {
         this.images[name].loaded = true;
+        console.log(`[DEV] Image loaded ${name}`);
         resolve(true);
       };
       img.onerror = () => {

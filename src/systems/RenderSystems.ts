@@ -2,6 +2,7 @@ import type { Game } from '@/core/Game';
 import { Player } from '@/entities/Player';
 import type { ImageManager } from '@/managers/ImageManager';
 import { GAME_HEIGHT, GAME_STATES, GAME_WIDTH, GRID_SIZE } from '@/core/constants';
+import type { Enemy } from '@/entities/Enemy';
 
 export class RenderSystem {
   canvas: HTMLCanvasElement;
@@ -13,12 +14,13 @@ export class RenderSystem {
     this.imageManager = imageManager;
   }
 
-  render(state: Game['state'], player: Player) {
+  render(state: Game['state'], player: Player, enemies: Enemy[] = []) {
     if (state === GAME_STATES.MENU) {
       this.renderMenuBackground();
     } else {
       this.ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
       this.renderGrid();
+      this.renderEnemies(enemies);
       this.renderPlayer(player);
     }
   }
@@ -29,6 +31,28 @@ export class RenderSystem {
     } else {
       this.ctx.fillStyle = 'red';
       this.ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+  }
+  renderEnemies(enemies: Enemy[]) {
+    for (let i = 0; i < enemies.length; i++) {
+      const enemy = enemies[i];
+
+      const centerX = enemy.x + enemy.width / 2;
+      const centerY = enemy.y + enemy.height / 2;
+
+      this.ctx.save();
+
+      // Move to center of enemy
+      this.ctx.translate(centerX, centerY);
+
+      // Rotate
+      this.ctx.rotate(enemy.angle);
+
+      // Draw centered (important!)
+      this.ctx.fillStyle = '#ff0000';
+      this.ctx.fillRect(-enemy.width / 2, -enemy.height / 2, enemy.width, enemy.height);
+
+      this.ctx.restore();
     }
   }
   renderGrid() {

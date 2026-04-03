@@ -65,7 +65,7 @@ export class UIManager {
 
   hideAllPanels() {
     this.panels.forEach((d) => {
-      d.classList.remove('active');
+      d?.classList?.remove('active');
     });
   }
   showPanel(panelId: PanelId) {
