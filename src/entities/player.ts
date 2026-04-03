@@ -1,5 +1,6 @@
-import { GAME_HEIGHT, GAME_WIDTH } from "@/utils/constants";
-import { clamp } from "@/utils/helpers";
+import { playerData } from '@/data/playerData';
+import { GAME_HEIGHT, GAME_WIDTH } from '@/core/constants';
+import { clamp } from '@/utils/helpers';
 
 export class Player {
   x: number;
@@ -9,11 +10,12 @@ export class Player {
   speed: number;
   speedMultiplier: number;
   constructor() {
-    this.width = 64;
-    this.height = 64;
+    this.width = playerData.width;
+    this.height = playerData.height;
     this.x = (GAME_WIDTH - this.width) / 2;
     this.y = (GAME_HEIGHT - this.height) / 2;
-    this.speed = 300;
+
+    this.speed = playerData.speed;
 
     // Multipliers (for player)
     this.speedMultiplier = 1;
@@ -22,17 +24,17 @@ export class Player {
   reset() {
     this.x = (GAME_WIDTH - this.width) / 2;
     this.y = (GAME_HEIGHT - this.height) / 2;
-    this.speed = 300;
+    this.speed = playerData.speed;
     this.speedMultiplier = 1;
   }
   update(dt: number, keys: Record<string, boolean>) {
     let dx = 0,
       dy = 0;
 
-    if (keys["w"] || keys["arrowup"]) dy -= 1;
-    if (keys["s"] || keys["arrowdown"]) dy += 1;
-    if (keys["a"] || keys["arrowleft"]) dx -= 1;
-    if (keys["d"] || keys["arrowright"]) dx += 1;
+    if (keys['w'] || keys['arrowup']) dy -= 1;
+    if (keys['s'] || keys['arrowdown']) dy += 1;
+    if (keys['a'] || keys['arrowleft']) dx -= 1;
+    if (keys['d'] || keys['arrowright']) dx += 1;
 
     //Normalize diagonal movement
     if (dx || dy) {

@@ -1,5 +1,5 @@
-import { Game } from "@/core/Game";
-import "./style.css";
+import { Game } from '@/core/Game';
+import './style.css';
 
 // if (!window.__GAME__) {
 //   window.__GAME__ = new Game();

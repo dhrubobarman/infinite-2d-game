@@ -1,8 +1,6 @@
-const availableImages = [
-  { name: "player", path: "./images/player.png" },
-] as const;
+const availableImages = [{ name: 'player', path: './images/player.png' }] as const;
 
-type AvailableImageNames = (typeof availableImages)[number]["name"];
+type AvailableImageNames = (typeof availableImages)[number]['name'];
 
 export class ImageManager {
   images: Record<string, { img: HTMLImageElement; loaded: boolean }>;
@@ -14,7 +12,7 @@ export class ImageManager {
     return new Promise((resolve) => {
       const img = new Image();
       img.src = path;
-      img.crossOrigin = "anonymous";
+      img.crossOrigin = 'anonymous';
       this.images[name] = { img, loaded: false };
       img.onload = () => {
         this.images[name].loaded = true;
@@ -22,9 +20,7 @@ export class ImageManager {
       };
       img.onerror = () => {
         this.images[name].loaded = false;
-        console.error(
-          `Failed to load ${name}, path: ${path} (will use fallback)`,
-        );
+        console.error(`Failed to load ${name}, path: ${path} (will use fallback)`);
         resolve(false);
       };
     });
@@ -41,6 +37,9 @@ export class ImageManager {
       promises.push(this.load(name, path));
     }
     await Promise.all(promises);
+    // TODO: remove before shipping
+    const DEBUG_DELAY = 1000;
+    await new Promise((resolve) => setTimeout(resolve, DEBUG_DELAY));
   }
 
   destroy() {
@@ -48,7 +47,7 @@ export class ImageManager {
       const img = this.images[name].img;
       img.onload = null;
       img.onerror = null;
-      img.src = "";
+      img.src = '';
     }
     this.images = {};
   }

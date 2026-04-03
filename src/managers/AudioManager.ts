@@ -1,11 +1,11 @@
 const availableSounds = [
-  { name: "pause", path: "./audio/pause.mp3" },
-  { name: "unpause", path: "./audio/unpause.mp3" },
-  { name: "button_click", path: "./audio/button_click.mp3" },
-  { name: "button_hover", path: "./audio/button_hover.mp3" },
+  { name: 'pause', path: './audio/pause.mp3' },
+  { name: 'unpause', path: './audio/unpause.mp3' },
+  { name: 'button_click', path: './audio/button_click.mp3' },
+  { name: 'button_hover', path: './audio/button_hover.mp3' },
 ] as const;
 
-type AvailableSoundNames = (typeof availableSounds)[number]["name"];
+export type AvailableSoundNames = (typeof availableSounds)[number]['name'];
 
 export class AudioManager {
   sounds: Record<string, { audio: HTMLAudioElement; loaded: boolean }>;
@@ -23,18 +23,16 @@ export class AudioManager {
       };
       audio.onerror = () => {
         this.sounds[name].loaded = false;
-        console.error(
-          `Failed to load ${name}, path: ${path} (will use fallback)`,
-        );
+        console.error(`Failed to load ${name}, path: ${path} (will use fallback)`);
         resolve(false);
       };
       audio.src = path;
-      audio.crossOrigin = "anonymous";
+      audio.crossOrigin = 'anonymous';
     });
   }
   play(name: AvailableSoundNames) {
-    const sound = this.sounds[name];
-    if (sound && sound.loaded) {
+    const sound = this.sounds[name]?.loaded ? this.sounds[name] : null;
+    if (sound) {
       sound.audio.currentTime = 0;
       sound.audio.play().catch((err) => {
         console.log(`Could not play ${name}:`, err);
