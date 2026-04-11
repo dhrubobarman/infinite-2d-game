@@ -8,3 +8,5 @@ export const GAME_STATES = {
   PLAYING: 'playing',
   PAUSED: 'paused',
 } as const;
+
+export const ENEMY_DESPAWN_MARGIN = 200;

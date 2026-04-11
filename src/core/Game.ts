@@ -76,7 +76,12 @@ export class Game {
     this.state = GAME_STATES.PLAYING;
     this.uiManager.hideAllPanels();
     this.resetGame();
+    this.enemyManager.reset();
     this.enemyManager.spawn(500, 200);
+    this.enemyManager.spawn(600, 200);
+    this.enemyManager.spawn(100, 600);
+    this.enemyManager.spawn(300, 800);
+    this.enemyManager.spawn(50, 150);
     this.uiManager.showTimer();
   }
   pause() {
