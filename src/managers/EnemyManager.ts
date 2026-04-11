@@ -1,22 +1,33 @@
 import { enemyData } from '@/data/enemyData';
 import { Enemy } from '@/entities/Enemy';
 import type { Player } from '@/entities/Player';
+import { ObjectPooler } from '@/utils/ObjectPooler';
 
 export class EnemyManager {
-  enemy: Enemy;
+  pool: ObjectPooler<Enemy>;
   constructor() {
-    this.enemy = new Enemy(enemyData.drifter);
+    const ENEMY_POOL_SIZE = 10;
+
+    // create a pool
+    this.pool = new ObjectPooler(() => {
+      return new Enemy(enemyData.drifter);
+    }, ENEMY_POOL_SIZE);
   }
 
   spawn(x: number, y: number) {
-    this.enemy.spawn(x, y);
+    const enemy = this.pool.get();
+    enemy.spawn(x, y);
+    return enemy;
   }
 
   getActiveEnemies() {
-    return [this.enemy];
+    return this.pool.activeList;
   }
 
   update(dt: number, player: Player) {
-    this.enemy.update(dt, player);
+    this.pool.updateAll(dt, player);
+  }
+  reset() {
+    this.pool.releaseAll();
   }
 }
