@@ -5,6 +5,7 @@ import { UIManager } from '@/managers/UIManager';
 import { RenderSystem } from '@/systems/RenderSystems';
 import { CANVAS_MARGIN, GAME_HEIGHT, GAME_STATES, GAME_WIDTH } from '@/core/constants';
 import { EnemyManager } from '@/managers/EnemyManager';
+import { EnemySpawner } from '@/managers/EnemySpawner';
 
 export class Game {
   canvas: HTMLCanvasElement;
@@ -20,6 +21,7 @@ export class Game {
   audioManager: AudioManager;
   time: number;
   enemyManager: EnemyManager;
+  enemySpawner: EnemySpawner;
 
   constructor() {
     this.canvas = document.getElementById('gameCanvas')! as HTMLCanvasElement;
@@ -30,6 +32,7 @@ export class Game {
     this.audioManager = new AudioManager();
     this.uiManager = new UIManager(this);
     this.enemyManager = new EnemyManager();
+    this.enemySpawner = new EnemySpawner(this.enemyManager);
 
     this.renderSystem = new RenderSystem(this.canvas, this.imageManager);
     this.player = new Player();
@@ -60,28 +63,26 @@ export class Game {
     this.rafId = requestAnimationFrame((t) => this.gameloop(t));
   }
 
-  private update(dt: number) {
+  update(dt: number) {
     if (this.state !== GAME_STATES.PLAYING) return;
     this.player.update(dt, this.keys);
     this.enemyManager.update(dt, this.player);
+    this.enemySpawner.update(dt);
   }
 
   resetGame() {
     this.player.reset();
     this.lastTime = performance.now();
     this.time = 0;
+    this.enemyManager.reset();
+    this.enemySpawner.reset();
   }
   startGame() {
     this.playSound('button_click');
     this.state = GAME_STATES.PLAYING;
     this.uiManager.hideAllPanels();
     this.resetGame();
-    this.enemyManager.reset();
-    this.enemyManager.spawn(500, 200);
-    this.enemyManager.spawn(600, 200);
-    this.enemyManager.spawn(100, 600);
-    this.enemyManager.spawn(300, 800);
-    this.enemyManager.spawn(50, 150);
+
     this.uiManager.showTimer();
   }
   pause() {

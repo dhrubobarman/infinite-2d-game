@@ -1,6 +1,10 @@
-const availableImages = [{ name: 'player', path: './images/player.png' }] as const;
+const availableImages = [
+  { name: 'player', path: './images/player.png' },
+  { name: 'enemy_drifter', path: './images/enemy/enemy_drifter.png' },
+  { name: 'enemy_seeker', path: './images/enemy/enemy_seeker.png' },
+] as const;
 
-type AvailableImageNames = (typeof availableImages)[number]['name'];
+export type AvailableImageNames = (typeof availableImages)[number]['name'];
 
 export class ImageManager {
   images: Record<string, { img: HTMLImageElement; loaded: boolean }>;

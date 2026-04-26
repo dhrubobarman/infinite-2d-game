@@ -36,23 +36,22 @@ export class RenderSystem {
   renderEnemies(enemies: Enemy[]) {
     for (let i = 0; i < enemies.length; i++) {
       const enemy = enemies[i];
+      const enemyImage = this.imageManager.get(enemy.data.image);
 
-      const centerX = enemy.x + enemy.width / 2;
-      const centerY = enemy.y + enemy.height / 2;
-
-      this.ctx.save();
-
-      // Move to center of enemy
-      this.ctx.translate(centerX, centerY);
-
-      // Rotate
-      this.ctx.rotate(enemy.angle);
-
-      // Draw centered (important!)
-      this.ctx.fillStyle = '#ff0000';
-      this.ctx.fillRect(-enemy.width / 2, -enemy.height / 2, enemy.width, enemy.height);
-
-      this.ctx.restore();
+      if (enemyImage) {
+        this.ctx.save();
+        if (enemy.facingLeft) {
+          this.ctx.translate(enemy.x + enemy.width, enemy.y);
+          this.ctx.scale(-1, 1);
+          this.ctx.drawImage(enemyImage, 0, 0, enemy.width, enemy.height);
+        } else {
+          this.ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.width, enemy.height);
+        }
+        this.ctx.restore();
+      } else {
+        this.ctx.fillStyle = enemy.data.color;
+        this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+      }
     }
   }
   renderGrid() {
