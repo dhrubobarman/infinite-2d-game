@@ -25,6 +25,10 @@ export const clamp = (value: number, min: number, max: number) =>
 
 export const lerp = (a: number, b: number, n: number) => (1 - n) * a + n * b;
 export const randomRange = (min: number, max: number) => Math.random() * (max - min) + min;
-export const randomInt = (min: number, max: number) => Math.floor(randomRange(min, max));
+export const randomInt = (min: number, max: number) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 export const distance = (x1: number, y1: number, x2: number, y2: number) =>
   Math.hypot(x2 - x1, y2 - y1);
