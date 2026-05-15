@@ -27,7 +27,7 @@ export class EnemySpawner {
     this.spawnTimer += dt;
     if (this.spawnTimer >= this.spawnInterval) {
       this.spawnWave();
-      this.spawnTimer = 0;
+      this.spawnTimer -= this.spawnInterval;
     }
   }
   spawnWave() {
@@ -53,6 +53,9 @@ export class EnemySpawner {
         x = -ENEMY_SPAWN_MERGIN;
         y = randomInt(0, GAME_HEIGHT);
         break;
+      default:
+        x = -ENEMY_SPAWN_MERGIN;
+        y = randomInt(0, GAME_HEIGHT);
     }
     this.enemyManager.spawn(type, x, y);
   }

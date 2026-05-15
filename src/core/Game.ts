@@ -1,11 +1,19 @@
+import {
+  CANVAS_MARGIN,
+  EVENTS,
+  GAME_HEIGHT,
+  GAME_STATES,
+  GAME_WIDTH,
+  type AppEvents,
+} from '@/core/constants';
+import { EventEmitter } from '@/core/EventEmitter';
 import { Player } from '@/entities/Player';
-import { AudioManager, type AvailableSoundNames } from '@/managers/AudioManager';
+import { AudioManager } from '@/managers/AudioManager';
+import { EnemyManager } from '@/managers/EnemyManager';
+import { EnemySpawner } from '@/managers/EnemySpawner';
 import { ImageManager } from '@/managers/ImageManager';
 import { UIManager } from '@/managers/UIManager';
 import { RenderSystem } from '@/systems/RenderSystems';
-import { CANVAS_MARGIN, GAME_HEIGHT, GAME_STATES, GAME_WIDTH } from '@/core/constants';
-import { EnemyManager } from '@/managers/EnemyManager';
-import { EnemySpawner } from '@/managers/EnemySpawner';
 
 export class Game {
   canvas: HTMLCanvasElement;
@@ -22,15 +30,17 @@ export class Game {
   time: number;
   enemyManager: EnemyManager;
   enemySpawner: EnemySpawner;
+  events: EventEmitter<AppEvents>;
 
   constructor() {
     this.canvas = document.getElementById('gameCanvas')! as HTMLCanvasElement;
+    this.events = new EventEmitter<AppEvents>();
     this.state = GAME_STATES.MENU;
     this.time = 0;
 
     this.imageManager = new ImageManager();
     this.audioManager = new AudioManager();
-    this.uiManager = new UIManager(this);
+    this.uiManager = new UIManager(this.events);
     this.enemyManager = new EnemyManager();
     this.enemySpawner = new EnemySpawner(this.enemyManager);
 
@@ -43,6 +53,15 @@ export class Game {
   }
   private async init() {
     await Promise.all([this.imageManager.loadAll(), this.audioManager.loadAll()]);
+
+    // Sound events
+    this.events.on(EVENTS.SOUND, (name) => this.audioManager.play(name));
+    this.events.on(EVENTS.GAME_PAUSE, () => this.pause());
+    this.events.on(EVENTS.GAME_RESUME, () => this.resume());
+    this.events.on(EVENTS.GAME_RETURN_TO_MENU, () => this.returnToMenu());
+
+    // Game state events
+    this.events.on(EVENTS.GAME_START, () => this.startGame());
 
     this.uiManager.showPanel('mainMenu');
     this.setupCanvas();
@@ -78,7 +97,7 @@ export class Game {
     this.enemySpawner.reset();
   }
   startGame() {
-    this.playSound('button_click');
+    this.events.emit(EVENTS.SOUND, 'button_click');
     this.state = GAME_STATES.PLAYING;
     this.uiManager.hideAllPanels();
     this.resetGame();
@@ -86,24 +105,21 @@ export class Game {
     this.uiManager.showTimer();
   }
   pause() {
-    this.playSound('pause');
+    this.events.emit(EVENTS.SOUND, 'pause');
     this.state = GAME_STATES.PAUSED;
     this.uiManager.showPanel('pauseMenu');
   }
   resume() {
-    this.playSound('unpause');
+    this.events.emit(EVENTS.SOUND, 'unpause');
     this.state = GAME_STATES.PLAYING;
     this.uiManager.hideAllPanels();
   }
   returnToMenu() {
-    this.playSound('button_click');
+    this.events.emit(EVENTS.SOUND, 'button_click');
     this.state = GAME_STATES.MENU;
     this.uiManager.hideAllPanels();
     this.uiManager.hideTimer();
     this.uiManager.showPanel('mainMenu');
-  }
-  playSound(name: AvailableSoundNames) {
-    this.audioManager.play(name);
   }
   private setupInput() {
     window.addEventListener('keydown', this.handleKeyDown);

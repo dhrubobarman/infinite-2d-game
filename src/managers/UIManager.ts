@@ -1,5 +1,5 @@
-import type { Game } from '@/core/Game';
-// import { createElement } from "@/utils/helpers";
+import { EVENTS, type AppEvents } from '@/core/constants';
+import type { EventEmitter } from '@/core/EventEmitter';
 
 const panels = {
   mainMenu: '#mainMenu',
@@ -17,13 +17,13 @@ const buttons = {
 type ButtonId = keyof typeof buttons;
 
 export class UIManager {
-  game: Game;
+  events: EventEmitter<AppEvents>;
   buttons: Map<ButtonId, HTMLButtonElement> = new Map();
   panels: Map<PanelId, HTMLDivElement> = new Map();
   timerEl: HTMLDivElement | null = null;
 
-  constructor(game: Game) {
-    this.game = game;
+  constructor(events: EventEmitter<AppEvents>) {
+    this.events = events;
     this.getAllElements();
     this.setupEventListeners();
   }
@@ -46,21 +46,21 @@ export class UIManager {
     this.buttons.get('resumeBtn')?.addEventListener('click', this.handleResume);
     this.buttons.get('quitBtn')?.addEventListener('click', this.handleQuit);
 
-    document.querySelectorAll('button').forEach((btn) => {
+    this.buttons.forEach((btn) => {
       btn.onmouseenter = () => {
-        this.game.playSound('button_hover');
+        this.events.emit(EVENTS.SOUND, 'button_hover');
       };
     });
   }
 
   private handleStartGame = () => {
-    this.game.startGame();
+    this.events.emit(EVENTS.GAME_START);
   };
   private handleResume = () => {
-    this.game.resume();
+    this.events.emit(EVENTS.GAME_RESUME);
   };
   private handleQuit = () => {
-    this.game.returnToMenu();
+    this.events.emit(EVENTS.GAME_RETURN_TO_MENU);
   };
 
   hideAllPanels() {
