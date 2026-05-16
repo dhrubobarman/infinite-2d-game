@@ -7,6 +7,13 @@ const panels = {
   loadingScreen: '#loadingScreen',
 } as const;
 
+const elements = {
+  hudEl: '#hud',
+  healthBarFill: '#healthBarFill',
+  timerEl: '#timer',
+} as const;
+type Elements = keyof typeof elements;
+
 type PanelId = keyof typeof panels;
 
 const buttons = {
@@ -20,7 +27,7 @@ export class UIManager {
   events: EventEmitter<AppEvents>;
   buttons: Map<ButtonId, HTMLButtonElement> = new Map();
   panels: Map<PanelId, HTMLDivElement> = new Map();
-  timerEl: HTMLDivElement | null = null;
+  elements: Map<Elements, HTMLElement> = new Map();
 
   constructor(events: EventEmitter<AppEvents>) {
     this.events = events;
@@ -38,7 +45,9 @@ export class UIManager {
     this.panels = new Map(
       Object.entries(panels).map(([key, selector]) => [key, document.querySelector(selector)!])
     ) as Map<PanelId, HTMLDivElement>;
-    this.timerEl = document.querySelector<HTMLDivElement>('#timer')!;
+    this.elements = new Map(
+      Object.entries(elements).map(([key, selector]) => [key, document.querySelector(selector)!])
+    ) as Map<Elements, HTMLDivElement>;
   }
 
   setupEventListeners() {
@@ -76,22 +85,30 @@ export class UIManager {
     this.panels.get(panleId)?.classList.remove('active');
   }
 
-  showTimer() {
-    if (this.timerEl) this.timerEl.style.display = 'block';
+  showHud() {
+    if (this.elements.get('hudEl')) this.elements.get('hudEl')!.style.display = 'block';
   }
-  hideTimer() {
-    if (this.timerEl) this.timerEl.style.display = 'none';
+  hideHud() {
+    if (this.elements.get('hudEl')) this.elements.get('hudEl')!.style.display = 'none';
   }
   updateTimer(time: number) {
-    if (!this.timerEl) return;
+    const timerEl = this.elements.get('timerEl');
+    if (!timerEl) return;
     const mins = Math.floor(time / 60);
     const secs = Math.floor(time % 60);
-    this.timerEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+    timerEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
   }
 
   destroy() {
     this.buttons.get('playBtn')?.removeEventListener('click', this.handleStartGame);
     this.buttons.get('resumeBtn')?.removeEventListener('click', this.handleResume);
     this.buttons.get('quitBtn')?.removeEventListener('click', this.handleQuit);
+  }
+  updateHealthBar(health: number, maxHealth: number) {
+    const healthBarFill = this.elements.get('healthBarFill');
+    if (!healthBarFill) return;
+
+    const pct = Math.max(0, health / maxHealth);
+    healthBarFill.style.setProperty('--health-pct', `${pct}`);
   }
 }

@@ -1,4 +1,5 @@
-import type { AvailableSoundNames } from '@/managers/AudioManager';
+import type { AvailableSoundNames } from '@/data/audioData';
+import type { Enemies } from '@/entities/Enemies';
 
 export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
@@ -23,6 +24,13 @@ export const EVENTS = {
   GAME_PAUSE: 'game:pause',
   GAME_RESUME: 'game:resume',
   GAME_RETURN_TO_MENU: 'game:returnToMenu',
+  // Player
+  PLAYER_DAMAGED: 'player:damaged',
+  PLAYER_DIED: 'player:died',
+
+  // enemy
+  ENEMY_DIED: 'enemy:died',
+  ENEMY_DAMAGED: 'enemy:damaged',
 } as const;
 
 export type AppEvents = {
@@ -31,4 +39,11 @@ export type AppEvents = {
   [EVENTS.GAME_PAUSE]: [];
   [EVENTS.GAME_RESUME]: [];
   [EVENTS.GAME_RETURN_TO_MENU]: [];
+  // Player
+  [EVENTS.PLAYER_DAMAGED]: [health: number, maxHeahth: number];
+  [EVENTS.PLAYER_DIED]: [];
+
+  // Enemy
+  [EVENTS.ENEMY_DAMAGED]: [enemy: Enemies];
+  [EVENTS.ENEMY_DIED]: [enemy: Enemies];
 };

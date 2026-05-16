@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   /* transition-behavior: allow-discrete; */
@@ -28,7 +28,7 @@ body {
   }
   body {
     overflow: hidden;
-    font-family: "Courier New", Courier, monospace;
+    font-family: 'Courier New', Courier, monospace;
     color: #eee;
   }
   #gameContainer {
@@ -101,7 +101,7 @@ body {
     margin: 8px;
     font-size: 16px;
     cursor: pointer;
-    font-family: "Courier New", monospace;
+    font-family: 'Courier New', monospace;
     border-radius: 8px;
     transition: all 0.3s;
     box-shadow: 0 0 20px rgb(74 157 255 / 0.2);
@@ -118,20 +118,6 @@ body {
 }
 
 #timer {
-  transition-property: display, opacity;
-  position: absolute;
-  top: 45px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #4a9eff;
-  font-size: 40px;
   text-shadow: 0 0 20px rgb(74 158 255 / 0.9);
-  font-family: "Courier New" monospace;
-  font-weight: 700;
-  z-index: 1000;
-  display: none;
-  pointer-events: none;
-  /* @starting-style {
-    opacity: 0;
-  } */
+  font-family: 'Courier New' monospace;
 }

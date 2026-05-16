@@ -1,6 +1,5 @@
 import type { enemyData } from '@/data/enemyData';
 import type { BehaviourTypes } from '@/entities/behaviours/BehaviourFactory';
-import type { AvailableImageNames } from '@/managers/ImageManager';
 
 export type EnemyData = {
   width: number;
@@ -11,7 +10,16 @@ export type EnemyData = {
   collisionRadius: number;
   behaviourType?: BehaviourTypes;
   color: string;
-  image: AvailableImageNames;
+  image: string;
+};
+
+export type PlayerData = {
+  width: number;
+  height: number;
+  speed: number;
+  collisionRadius: number;
+  image: string;
+  maxHealth: number;
 };
 
 export type EnemyType = keyof typeof enemyData;

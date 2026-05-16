@@ -25,7 +25,10 @@
     "rootDir": "./src",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "@/utils/domFns"
   },
   "include": ["src"]
 }

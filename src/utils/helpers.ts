@@ -1,22 +1,62 @@
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+type Child = HTMLElement | Text | string | number | null | undefined | false;
+
+type Children = Child | Child[];
+
 type Options<T extends keyof HTMLElementTagNameMap> = {
   style?: Partial<CSSStyleDeclaration>;
-} & Omit<Partial<HTMLElementTagNameMap[T]>, 'style'>;
+  children?: Children;
+} & Omit<Partial<HTMLElementTagNameMap[T]>, 'style' | 'children'>;
+
+function appendChildren(parent: HTMLElement, children: Children) {
+  const items = Array.isArray(children) ? children : [children];
+
+  for (const child of items) {
+    // Ignore nullish and false values (useful for conditional rendering)
+    if (child == null || child === false) continue;
+
+    // Convert primitive values to text nodes
+    if (typeof child === 'string' || typeof child === 'number') {
+      parent.appendChild(document.createTextNode(String(child)));
+      continue;
+    }
+
+    // Append DOM nodes directly
+    parent.appendChild(child);
+  }
+}
 
 export const createElement = <T extends keyof HTMLElementTagNameMap>(
   tag: T,
   attributes?: Options<T>,
   parent?: HTMLElement
-) => {
-  const element = document.createElement(tag);
+): HTMLElementTagNameMap[T] => {
+  const element = document.createElement(tag) as HTMLElementTagNameMap[T];
 
   if (attributes) {
-    const { style, ...rest } = attributes;
+    const { style, children, ...rest } = attributes;
+
     Object.assign(element, rest);
+
     if (style) {
       Object.assign(element.style, style);
     }
+
+    if (children !== undefined) {
+      appendChildren(element, children);
+    }
   }
-  if (parent) parent.appendChild(element);
+
+  if (parent) {
+    parent.appendChild(element);
+  }
+
   return element;
 };
 

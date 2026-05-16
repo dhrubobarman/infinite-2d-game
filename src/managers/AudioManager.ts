@@ -1,11 +1,4 @@
-const availableSounds = [
-  { name: 'pause', path: './audio/pause.mp3' },
-  { name: 'unpause', path: './audio/unpause.mp3' },
-  { name: 'button_click', path: './audio/button_click.mp3' },
-  { name: 'button_hover', path: './audio/button_hover.mp3' },
-] as const;
-
-export type AvailableSoundNames = (typeof availableSounds)[number]['name'];
+import { availableSounds, type AvailableSoundNames } from '@/data/audioData';
 
 export class AudioManager {
   sounds: Record<string, { audio: HTMLAudioElement; loaded: boolean }>;

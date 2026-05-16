@@ -9,11 +9,18 @@ export class Player {
   height: number;
   speed: number;
   speedMultiplier: number;
+  collisionRadius: number;
+  health: number;
+  maxHealth: number;
+
   constructor() {
     this.width = playerData.width;
     this.height = playerData.height;
     this.x = (GAME_WIDTH - this.width) / 2;
     this.y = (GAME_HEIGHT - this.height) / 2;
+    this.collisionRadius = playerData.collisionRadius;
+    this.maxHealth = playerData.maxHealth;
+    this.health = this.maxHealth;
 
     this.speed = playerData.speed;
 
@@ -26,6 +33,7 @@ export class Player {
     this.y = (GAME_HEIGHT - this.height) / 2;
     this.speed = playerData.speed;
     this.speedMultiplier = 1;
+    this.health = this.maxHealth;
   }
   update(dt: number, keys: Record<string, boolean>) {
     let dx = 0,
@@ -49,5 +57,9 @@ export class Player {
     // Keep player in bounds
     this.x = clamp(this.x, 0, GAME_WIDTH - this.width);
     this.y = clamp(this.y, 0, GAME_HEIGHT - this.height);
+  }
+  takeDamage(amount: number) {
+    this.health = Math.max(0, this.health - amount);
+    return true;
   }
 }

@@ -1,5 +1,6 @@
 import { Game } from '@/core/Game';
 import './style.css';
+import '@/utils/layout';
 
 // if (!window.__GAME__) {
 //   window.__GAME__ = new Game();

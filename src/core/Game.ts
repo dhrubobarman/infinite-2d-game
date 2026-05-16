@@ -7,12 +7,15 @@ import {
   type AppEvents,
 } from '@/core/constants';
 import { EventEmitter } from '@/core/EventEmitter';
+import type { Enemies } from '@/entities/Enemies';
 import { Player } from '@/entities/Player';
 import { AudioManager } from '@/managers/AudioManager';
+import { CollisionManager } from '@/managers/CollisionManager';
 import { EnemyManager } from '@/managers/EnemyManager';
 import { EnemySpawner } from '@/managers/EnemySpawner';
 import { ImageManager } from '@/managers/ImageManager';
 import { UIManager } from '@/managers/UIManager';
+import { CollisionSystem } from '@/systems/CollisionSystem';
 import { RenderSystem } from '@/systems/RenderSystems';
 
 export class Game {
@@ -31,6 +34,8 @@ export class Game {
   enemyManager: EnemyManager;
   enemySpawner: EnemySpawner;
   events: EventEmitter<AppEvents>;
+  collisionSystem: CollisionSystem;
+  collisionManager: CollisionManager;
 
   constructor() {
     this.canvas = document.getElementById('gameCanvas')! as HTMLCanvasElement;
@@ -45,6 +50,8 @@ export class Game {
     this.enemySpawner = new EnemySpawner(this.enemyManager);
 
     this.renderSystem = new RenderSystem(this.canvas, this.imageManager);
+    this.collisionSystem = new CollisionSystem();
+    this.collisionManager = new CollisionManager(this.collisionSystem, this.events);
     this.player = new Player();
 
     this.keys = {};
@@ -56,12 +63,19 @@ export class Game {
 
     // Sound events
     this.events.on(EVENTS.SOUND, (name) => this.audioManager.play(name));
+
+    // Game state events
+    this.events.on(EVENTS.GAME_START, () => this.startGame());
     this.events.on(EVENTS.GAME_PAUSE, () => this.pause());
     this.events.on(EVENTS.GAME_RESUME, () => this.resume());
     this.events.on(EVENTS.GAME_RETURN_TO_MENU, () => this.returnToMenu());
 
-    // Game state events
-    this.events.on(EVENTS.GAME_START, () => this.startGame());
+    // Plyer relaed evens
+    this.events.on(EVENTS.PLAYER_DAMAGED, (health, maxHealth) => {
+      this.events.emit(EVENTS.SOUND, 'player_hurt');
+      this.uiManager.updateHealthBar(health, maxHealth);
+    });
+    this.events.on(EVENTS.PLAYER_DIED, () => {});
 
     this.uiManager.showPanel('mainMenu');
     this.setupCanvas();
@@ -77,16 +91,19 @@ export class Game {
       this.time += dt;
       this.uiManager.updateTimer(this.time);
     }
-    this.update(dt);
-    this.renderSystem.render(this.state, this.player, this.enemyManager.getActiveEnemies());
+    const activeEnemies = this.enemyManager.getActiveEnemies();
+
+    this.update(dt, activeEnemies);
+    this.renderSystem.render(this.state, this.player, activeEnemies);
     this.rafId = requestAnimationFrame((t) => this.gameloop(t));
   }
 
-  update(dt: number) {
+  update(dt: number, activeEnemies: Enemies[]) {
     if (this.state !== GAME_STATES.PLAYING) return;
     this.player.update(dt, this.keys);
     this.enemyManager.update(dt, this.player);
     this.enemySpawner.update(dt);
+    this.collisionManager.update(this.player, activeEnemies);
   }
 
   resetGame() {
@@ -101,8 +118,9 @@ export class Game {
     this.state = GAME_STATES.PLAYING;
     this.uiManager.hideAllPanels();
     this.resetGame();
+    this.uiManager.updateHealthBar(this.player.health, this.player.maxHealth);
 
-    this.uiManager.showTimer();
+    this.uiManager.showHud();
   }
   pause() {
     this.events.emit(EVENTS.SOUND, 'pause');
@@ -118,7 +136,7 @@ export class Game {
     this.events.emit(EVENTS.SOUND, 'button_click');
     this.state = GAME_STATES.MENU;
     this.uiManager.hideAllPanels();
-    this.uiManager.hideTimer();
+    this.uiManager.hideHud();
     this.uiManager.showPanel('mainMenu');
   }
   private setupInput() {

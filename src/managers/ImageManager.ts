@@ -1,10 +1,12 @@
+import { enemyData } from '@/data/enemyData';
+import { playerData } from '@/data/playerData';
+
 const availableImages = [
-  { name: 'player', path: './images/player.png' },
-  { name: 'enemy_drifter', path: './images/enemy/enemy_drifter.png' },
-  { name: 'enemy_seeker', path: './images/enemy/enemy_seeker.png' },
+  ...Object.values(enemyData).map((e) => ({ name: e.image, path: `./images/${e.image}.png` })),
+  { name: playerData.image, path: `./images/${playerData.image}.png` },
 ] as const;
 
-export type AvailableImageNames = (typeof availableImages)[number]['name'];
+type AvailableImageNames = (typeof availableImages)[number]['name'];
 
 export class ImageManager {
   images: Record<string, { img: HTMLImageElement; loaded: boolean }>;
@@ -42,9 +44,6 @@ export class ImageManager {
       promises.push(this.load(name, path));
     }
     await Promise.all(promises);
-    // TODO: remove before shipping
-    const DEBUG_DELAY = 1000;
-    await new Promise((resolve) => setTimeout(resolve, DEBUG_DELAY));
   }
 
   destroy() {
