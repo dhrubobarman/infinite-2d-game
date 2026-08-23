@@ -12,6 +12,7 @@ export const GAME_STATES = {
   MENU: 'menu',
   PLAYING: 'playing',
   PAUSED: 'paused',
+  GAME_OVER: 'gameOver',
 } as const;
 
 export const ENEMY_DESPAWN_MARGIN = 200;

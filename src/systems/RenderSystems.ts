@@ -26,17 +26,21 @@ export class RenderSystem {
   }
   renderPlayer(player: Player) {
     const playerImage = this.imageManager.get('player');
+    if (player.invincible) {
+      this.ctx.globalAlpha = 0.2 + 0.6 * Math.abs(Math.sin(player.invincibilityTimer * 10));
+    }
     if (playerImage) {
       this.ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
     } else {
       this.ctx.fillStyle = 'red';
       this.ctx.fillRect(player.x, player.y, player.width, player.height);
     }
+    this.ctx.globalAlpha = 1;
   }
   renderEnemies(enemies: Enemy[]) {
     for (let i = 0; i < enemies.length; i++) {
       const enemy = enemies[i];
-      const enemyImage = this.imageManager.get(enemy.data.image);
+      const enemyImage = this.imageManager.get(enemy.data.image as any);
 
       if (enemyImage) {
         this.ctx.save();

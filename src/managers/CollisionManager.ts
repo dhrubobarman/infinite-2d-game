@@ -24,6 +24,10 @@ export class CollisionManager {
         const damageApplied = player.takeDamage(enemy.damage);
         if (damageApplied) {
           this.events.emit(EVENTS.PLAYER_DAMAGED, player.health, player.maxHealth);
+          if (player.isdDead()) {
+            this.events.emit(EVENTS.PLAYER_DIED);
+            return;
+          }
         }
         this.events.emit(EVENTS.ENEMY_DIED, enemy);
       }

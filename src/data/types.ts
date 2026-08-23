@@ -20,6 +20,7 @@ export type PlayerData = {
   collisionRadius: number;
   image: string;
   maxHealth: number;
+  invincibilityDuration: number;
 };
 
 export type EnemyType = keyof typeof enemyData;

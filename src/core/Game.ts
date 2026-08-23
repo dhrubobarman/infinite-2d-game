@@ -75,7 +75,10 @@ export class Game {
       this.events.emit(EVENTS.SOUND, 'player_hurt');
       this.uiManager.updateHealthBar(health, maxHealth);
     });
-    this.events.on(EVENTS.PLAYER_DIED, () => {});
+    this.events.on(EVENTS.PLAYER_DIED, () => {
+      this.events.emit(EVENTS.SOUND, 'game_over');
+      this.gameOver();
+    });
 
     this.uiManager.showPanel('mainMenu');
     this.setupCanvas();
@@ -96,6 +99,12 @@ export class Game {
     this.update(dt, activeEnemies);
     this.renderSystem.render(this.state, this.player, activeEnemies);
     this.rafId = requestAnimationFrame((t) => this.gameloop(t));
+  }
+
+  gameOver() {
+    this.state = GAME_STATES.GAME_OVER;
+    this.uiManager.hideHud();
+    this.uiManager.showPanel('gameOverMenu');
   }
 
   update(dt: number, activeEnemies: Enemies[]) {

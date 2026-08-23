@@ -12,6 +12,9 @@ export class Player {
   collisionRadius: number;
   health: number;
   maxHealth: number;
+  invincibilityDuration: number;
+  invincible: boolean;
+  invincibilityTimer: number;
 
   constructor() {
     this.width = playerData.width;
@@ -21,6 +24,9 @@ export class Player {
     this.collisionRadius = playerData.collisionRadius;
     this.maxHealth = playerData.maxHealth;
     this.health = this.maxHealth;
+    this.invincibilityDuration = playerData.invincibilityDuration;
+    this.invincible = false;
+    this.invincibilityTimer = 0;
 
     this.speed = playerData.speed;
 
@@ -34,8 +40,17 @@ export class Player {
     this.speed = playerData.speed;
     this.speedMultiplier = 1;
     this.health = this.maxHealth;
+    this.invincible = false;
+    this.invincibilityTimer = 0;
   }
   update(dt: number, keys: Record<string, boolean>) {
+    if (this.invincible) {
+      this.invincibilityTimer -= dt;
+      if (this.invincibilityTimer <= 0) {
+        this.invincible = false;
+        this.invincibilityTimer = 0;
+      }
+    }
     let dx = 0,
       dy = 0;
 
@@ -58,8 +73,16 @@ export class Player {
     this.x = clamp(this.x, 0, GAME_WIDTH - this.width);
     this.y = clamp(this.y, 0, GAME_HEIGHT - this.height);
   }
-  takeDamage(amount: number) {
+  takeDamage(amount: number): boolean {
+    if (this.invincible) return false;
+
     this.health = Math.max(0, this.health - amount);
+    this.invincible = true;
+    this.invincibilityTimer = this.invincibilityDuration;
+
     return true;
+  }
+  isdDead() {
+    return this.health <= 0;
   }
 }

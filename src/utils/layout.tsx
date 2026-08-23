@@ -57,6 +57,11 @@ const layout = (
       <h1>Loading...</h1>
       <p>Sherpening the pixels</p>
     </div>
+    <div id="gameOverMenu" className="ui-panel">
+      <h2>Game Over</h2>
+      <button id="playAgainBtn">Play Again</button>
+      <button id="quitFromGameoverBtn">QUIT TO MENU</button>
+    </div>
   </>
 );
 

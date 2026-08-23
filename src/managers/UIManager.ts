@@ -5,6 +5,7 @@ const panels = {
   mainMenu: '#mainMenu',
   pauseMenu: '#pauseMenu',
   loadingScreen: '#loadingScreen',
+  gameOverMenu: '#gameOverMenu',
 } as const;
 
 const elements = {
@@ -20,6 +21,8 @@ const buttons = {
   playBtn: '#playBtn',
   resumeBtn: '#resumeBtn',
   quitBtn: '#quitBtn',
+  playAgainBtn: '#playAgainBtn',
+  quitFromGameoverBtn: '#quitFromGameoverBtn',
 } as const;
 type ButtonId = keyof typeof buttons;
 
@@ -54,6 +57,12 @@ export class UIManager {
     this.buttons.get('playBtn')?.addEventListener('click', this.handleStartGame);
     this.buttons.get('resumeBtn')?.addEventListener('click', this.handleResume);
     this.buttons.get('quitBtn')?.addEventListener('click', this.handleQuit);
+    this.buttons
+      .get('playAgainBtn')
+      ?.addEventListener('click', () => this.events.emit(EVENTS.GAME_START));
+    this.buttons
+      .get('quitFromGameoverBtn')
+      ?.addEventListener('click', () => this.events.emit(EVENTS.GAME_RETURN_TO_MENU));
 
     this.buttons.forEach((btn) => {
       btn.onmouseenter = () => {

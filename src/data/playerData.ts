@@ -7,4 +7,5 @@ export const playerData = {
   collisionRadius: 28,
   image: 'player',
   maxHealth: 12,
+  invincibilityDuration: 2,
 } as const satisfies PlayerData;
