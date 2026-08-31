@@ -6,6 +6,7 @@ const panels = {
   pauseMenu: '#pauseMenu',
   loadingScreen: '#loadingScreen',
   gameOverMenu: '#gameOverMenu',
+  missionCompleteMenu: `#missionCompleteMenu`,
 } as const;
 
 const elements = {
@@ -17,18 +18,8 @@ type Elements = keyof typeof elements;
 
 type PanelId = keyof typeof panels;
 
-const buttons = {
-  playBtn: '#playBtn',
-  resumeBtn: '#resumeBtn',
-  quitBtn: '#quitBtn',
-  playAgainBtn: '#playAgainBtn',
-  quitFromGameoverBtn: '#quitFromGameoverBtn',
-} as const;
-type ButtonId = keyof typeof buttons;
-
 export class UIManager {
   events: EventEmitter<AppEvents>;
-  buttons: Map<ButtonId, HTMLButtonElement> = new Map();
   panels: Map<PanelId, HTMLDivElement> = new Map();
   elements: Map<Elements, HTMLElement> = new Map();
 
@@ -39,11 +30,6 @@ export class UIManager {
   }
 
   private getAllElements() {
-    // buttons
-    this.buttons = new Map(
-      Object.entries(buttons).map(([key, selector]) => [key, document.querySelector(selector)!])
-    ) as Map<ButtonId, HTMLButtonElement>;
-
     // containers
     this.panels = new Map(
       Object.entries(panels).map(([key, selector]) => [key, document.querySelector(selector)!])
@@ -54,21 +40,19 @@ export class UIManager {
   }
 
   setupEventListeners() {
-    this.buttons.get('playBtn')?.addEventListener('click', this.handleStartGame);
-    this.buttons.get('resumeBtn')?.addEventListener('click', this.handleResume);
-    this.buttons.get('quitBtn')?.addEventListener('click', this.handleQuit);
-    this.buttons
-      .get('playAgainBtn')
-      ?.addEventListener('click', () => this.events.emit(EVENTS.GAME_START));
-    this.buttons
-      .get('quitFromGameoverBtn')
-      ?.addEventListener('click', () => this.events.emit(EVENTS.GAME_RETURN_TO_MENU));
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action='start']`)
+      ?.forEach((btn) => btn.addEventListener('click', this.handleStartGame));
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action='resume']`)
+      ?.forEach((btn) => btn.addEventListener('click', this.handleResume));
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action='returnToMenu']`)
+      ?.forEach((btn) => btn.addEventListener('click', this.handleQuit));
 
-    this.buttons.forEach((btn) => {
-      btn.onmouseenter = () => {
-        this.events.emit(EVENTS.SOUND, 'button_hover');
-      };
-    });
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action]`)
+      ?.forEach((btn) => btn.addEventListener('mouseenter', this.playButtonHoverSound));
   }
 
   private handleStartGame = () => {
@@ -80,6 +64,9 @@ export class UIManager {
   private handleQuit = () => {
     this.events.emit(EVENTS.GAME_RETURN_TO_MENU);
   };
+  private playButtonHoverSound = () => {
+    this.events.emit(EVENTS.SOUND, 'button_hover');
+  };
 
   hideAllPanels() {
     this.panels.forEach((d) => {
@@ -90,8 +77,8 @@ export class UIManager {
     this.hideAllPanels();
     this.panels.get(panelId)?.classList.add('active');
   }
-  hidePanel(panleId: PanelId) {
-    this.panels.get(panleId)?.classList.remove('active');
+  hidePanel(panelId: PanelId) {
+    this.panels.get(panelId)?.classList.remove('active');
   }
 
   showHud() {
@@ -109,9 +96,18 @@ export class UIManager {
   }
 
   destroy() {
-    this.buttons.get('playBtn')?.removeEventListener('click', this.handleStartGame);
-    this.buttons.get('resumeBtn')?.removeEventListener('click', this.handleResume);
-    this.buttons.get('quitBtn')?.removeEventListener('click', this.handleQuit);
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action='start']`)
+      ?.forEach((btn) => btn.removeEventListener('click', this.handleStartGame));
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action='resume']`)
+      ?.forEach((btn) => btn.removeEventListener('click', this.handleResume));
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action='returnToMenu']`)
+      ?.forEach((btn) => btn.removeEventListener('click', this.handleQuit));
+    document
+      .querySelectorAll<HTMLButtonElement>(`[data-action]`)
+      ?.forEach((btn) => btn.removeEventListener('mouseenter', this.playButtonHoverSound));
   }
   updateHealthBar(health: number, maxHealth: number) {
     const healthBarFill = this.elements.get('healthBarFill');

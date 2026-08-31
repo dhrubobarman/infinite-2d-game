@@ -1,5 +1,5 @@
 import { playerData } from '@/data/playerData';
-import { GAME_HEIGHT, GAME_WIDTH } from '@/core/constants';
+import { GAME_HEIGHT, GAME_WIDTH, PUSHBACK_DECAY } from '@/core/constants';
 import { clamp } from '@/utils/helpers';
 
 export class Player {
@@ -15,6 +15,10 @@ export class Player {
   invincibilityDuration: number;
   invincible: boolean;
   invincibilityTimer: number;
+  collisionDamage: number;
+  pushVx: number;
+  pushVy: number;
+  pushbackForce: number;
 
   constructor() {
     this.width = playerData.width;
@@ -22,9 +26,11 @@ export class Player {
     this.x = (GAME_WIDTH - this.width) / 2;
     this.y = (GAME_HEIGHT - this.height) / 2;
     this.collisionRadius = playerData.collisionRadius;
+    this.collisionDamage = playerData.collisionDamage;
     this.maxHealth = playerData.maxHealth;
     this.health = this.maxHealth;
     this.invincibilityDuration = playerData.invincibilityDuration;
+    this.pushbackForce = playerData.pushbackForce;
     this.invincible = false;
     this.invincibilityTimer = 0;
 
@@ -32,6 +38,8 @@ export class Player {
 
     // Multipliers (for player)
     this.speedMultiplier = 1;
+    this.pushVx = 0;
+    this.pushVy = 0;
   }
 
   reset() {
@@ -42,6 +50,8 @@ export class Player {
     this.health = this.maxHealth;
     this.invincible = false;
     this.invincibilityTimer = 0;
+    this.pushVx = 0;
+    this.pushVy = 0;
   }
   update(dt: number, keys: Record<string, boolean>) {
     if (this.invincible) {
@@ -51,6 +61,23 @@ export class Player {
         this.invincibilityTimer = 0;
       }
     }
+
+    if (this.pushVx !== 0 || this.pushVy !== 0) {
+      this.x += this.pushVx * dt;
+      this.y += this.pushVy * dt;
+
+      const speed = Math.sqrt(this.pushVx * this.pushVx + this.pushVy * this.pushVy);
+      const decay = PUSHBACK_DECAY * dt;
+      if (this.speed <= decay) {
+        this.pushVx = 0;
+        this.pushVy = 0;
+      } else {
+        const ratio = (speed - decay) / speed;
+        this.pushVx *= ratio;
+        this.pushVy *= ratio;
+      }
+    }
+
     let dx = 0,
       dy = 0;
 
@@ -72,6 +99,10 @@ export class Player {
     // Keep player in bounds
     this.x = clamp(this.x, 0, GAME_WIDTH - this.width);
     this.y = clamp(this.y, 0, GAME_HEIGHT - this.height);
+  }
+  applyPushback(dirX: number, dirY: number, force: number) {
+    this.pushVx = dirX * force;
+    this.pushVy = dirY * force;
   }
   takeDamage(amount: number): boolean {
     if (this.invincible) return false;

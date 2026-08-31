@@ -1,3 +1,4 @@
+import { ENEMY_HIT_INVINCIBILITY_DURATION } from '@/core/constants';
 import type { EnemyData } from '@/data/types';
 import type { BehaviourTypes } from '@/entities/behaviours/BehaviourFactory';
 import type { Behaviours } from '@/entities/behaviours/Behaviours';
@@ -15,6 +16,11 @@ export class Enemies {
   x: number;
   y: number;
   behaviour: Behaviours;
+  invincible: boolean;
+  invincibilityTimer: number;
+  pushVx: number;
+  pushVy: number;
+
   constructor(data: EnemyData, behaviour: Behaviours) {
     this.data = data;
 
@@ -34,5 +40,24 @@ export class Enemies {
     this.behaviourType = data.behaviourType ?? 'seek';
 
     this.behaviour = behaviour;
+    this.invincible = false;
+    this.invincibilityTimer = 0;
+    this.pushVx = 0;
+    this.pushVy = 0;
+  }
+
+  takeDamage(amount: number): boolean {
+    if (this.invincible) return false;
+    this.health = Math.max(0, this.health - amount);
+    this.invincible = true;
+    this.invincibilityTimer = ENEMY_HIT_INVINCIBILITY_DURATION;
+    return true;
+  }
+  isdDead() {
+    return this.health <= 0;
+  }
+  applyPushback(dirX: number, dirY: number, force: number) {
+    this.pushVx = dirX * force;
+    this.pushVy = dirY * force;
   }
 }

@@ -1,4 +1,4 @@
-import { ENEMY_DESPAWN_MARGIN, GAME_HEIGHT, GAME_WIDTH } from '@/core/constants';
+import { ENEMY_DESPAWN_MARGIN, GAME_HEIGHT, GAME_WIDTH, PUSHBACK_DECAY } from '@/core/constants';
 import type { EnemyData } from '@/data/types';
 import type { Behaviours } from '@/entities/behaviours/Behaviours';
 import { Enemies } from '@/entities/Enemies';
@@ -21,12 +21,22 @@ export class Enemy extends Enemies {
 
   reset() {
     this.active = false;
+    this.pushVx = 0;
+    this.pushVy = 0;
     this.health = this.data.health;
     if (this.behaviour.reset) this.behaviour.reset();
   }
 
   update(dt: number, player: Player) {
     if (!this.active) return;
+
+    if (this.invincible) {
+      this.invincibilityTimer -= dt;
+      if (this.invincibilityTimer <= 0) {
+        this.invincible = false;
+        this.invincibilityTimer = 0;
+      }
+    }
 
     // Despawn if too far offscreen
     if (
@@ -38,6 +48,22 @@ export class Enemy extends Enemies {
       this.active = false;
       return;
     }
+
+    if (this.pushVx !== 0 || this.pushVy !== 0) {
+      this.x += this.pushVx * dt;
+      this.y += this.pushVy * dt;
+      const speed = Math.sqrt(this.pushVx * this.pushVx + this.pushVy * this.pushVy);
+      const decay = PUSHBACK_DECAY * dt;
+      if (speed <= decay) {
+        this.pushVx = 0;
+        this.pushVy = 0;
+      } else {
+        const ratio = (speed - decay) / speed;
+        this.pushVx *= ratio;
+        this.pushVy *= ratio;
+      }
+    }
+
     const oldX = this.x;
     this.behaviour.update(this, dt, player);
     this.facingLeft = this.x < oldX;

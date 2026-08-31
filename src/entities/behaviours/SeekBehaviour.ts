@@ -10,7 +10,7 @@ export class SeekBehaviour extends Behaviours {
   override update(enemy: Enemies, dt: number, player: Player) {
     const dx = player.x + player.width / 2 - (enemy.x + enemy.width / 2);
     const dy = player.y + player.height / 2 - (enemy.y + enemy.height / 2);
-    const len = Math.hypot(dx, dy);
+    const len = Math.sqrt(dx * dx + dy * dy);
     if (len > EPS) {
       const normalizeDx = dx / len;
       const normalizeDy = dy / len;

@@ -19,17 +19,36 @@ export class CollisionManager {
   checkPlayerVsEnemies(player: Player, enemies: Enemies[]) {
     for (const enemy of enemies) {
       if (!enemy.active) continue;
+
       if (this.collisionSystem.checkCircleCircle(player, enemy)) {
-        enemy.active = false;
-        const damageApplied = player.takeDamage(enemy.damage);
-        if (damageApplied) {
+        const dx = player.x + player.width / 2 - (enemy.x + enemy.width / 2);
+        const dy = player.y + player.height / 2 - (enemy.y + enemy.height / 2);
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const nx = dist > 0 ? dx / dist : 1;
+        const ny = dist > 0 ? dy / dist : 0;
+
+        const enemyDamageApplied = enemy.takeDamage(player.collisionDamage);
+        if (enemyDamageApplied) {
+          this.events.emit(EVENTS.ENEMY_DAMAGED, enemy);
+          if (enemy.isdDead()) {
+            enemy.active = false;
+            this.events.emit(EVENTS.ENEMY_DIED, enemy);
+          } else if (!enemy.data.pushbackImmune) {
+            enemy.applyPushback(-nx, -ny, enemy.data.pushbackForce);
+          }
+        }
+
+        const playerDamageApplied = player.takeDamage(enemy.damage);
+        if (playerDamageApplied) {
           this.events.emit(EVENTS.PLAYER_DAMAGED, player.health, player.maxHealth);
           if (player.isdDead()) {
             this.events.emit(EVENTS.PLAYER_DIED);
             return;
           }
+          if (enemy.data.pushbackImmune) {
+            player.applyPushback(nx, ny, player.pushbackForce);
+          }
         }
-        this.events.emit(EVENTS.ENEMY_DIED, enemy);
       }
     }
   }

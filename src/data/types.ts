@@ -1,3 +1,4 @@
+import type { AvailableSoundNames } from '@/data/audioData';
 import type { enemyData } from '@/data/enemyData';
 import type { BehaviourTypes } from '@/entities/behaviours/BehaviourFactory';
 
@@ -11,16 +12,21 @@ export type EnemyData = {
   behaviourType?: BehaviourTypes;
   color: string;
   image: string;
+  pushbackForce: number;
+  pushbackImmune: boolean;
+  sounds: { hit: AvailableSoundNames; death: AvailableSoundNames };
 };
 
 export type PlayerData = {
   width: number;
   height: number;
   speed: number;
+  collisionDamage: number;
   collisionRadius: number;
   image: string;
   maxHealth: number;
   invincibilityDuration: number;
+  pushbackForce: number;
 };
 
 export type EnemyType = keyof typeof enemyData;

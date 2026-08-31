@@ -1,6 +1,6 @@
 import {
   ENEMY_SPAWN_INTERVAL,
-  ENEMY_SPAWN_MERGIN,
+  ENEMY_SPAWN_MARGIN,
   GAME_HEIGHT,
   GAME_WIDTH,
 } from '@/core/constants';
@@ -39,22 +39,22 @@ export class EnemySpawner {
     switch (edge) {
       case 0: // top
         x = randomInt(0, GAME_WIDTH);
-        y = -ENEMY_SPAWN_MERGIN;
+        y = -ENEMY_SPAWN_MARGIN;
         break;
       case 1: // right
-        x = -ENEMY_SPAWN_MERGIN;
+        x = -ENEMY_SPAWN_MARGIN;
         y = randomInt(0, GAME_HEIGHT);
         break;
       case 2: // bottom
         x = randomInt(0, GAME_WIDTH);
-        y = ENEMY_SPAWN_MERGIN + GAME_HEIGHT;
+        y = ENEMY_SPAWN_MARGIN + GAME_HEIGHT;
         break;
       case 3: //left
-        x = -ENEMY_SPAWN_MERGIN;
+        x = -ENEMY_SPAWN_MARGIN;
         y = randomInt(0, GAME_HEIGHT);
         break;
       default:
-        x = -ENEMY_SPAWN_MERGIN;
+        x = -ENEMY_SPAWN_MARGIN;
         y = randomInt(0, GAME_HEIGHT);
     }
     this.enemyManager.spawn(type, x, y);

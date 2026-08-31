@@ -42,7 +42,9 @@ const layout = (
     </div>
     <div id="mainMenu" className="ui-panel">
       <h1>Game Starter Kit</h1>
-      <button id="playBtn">Play</button>
+      <button data-action="start" id="playBtn">
+        Play
+      </button>
       <div className="mt-4 text-[12px]">
         <p>WASD - Move</p>
         <p>ESC - Pause</p>
@@ -50,8 +52,12 @@ const layout = (
     </div>
     <div id="pauseMenu" className="ui-panel">
       <h2>Paused</h2>
-      <button id="resumeBtn">RESUME</button>
-      <button id="quitBtn">QUIT TO MENU</button>
+      <button data-action="resume" id="resumeBtn">
+        RESUME
+      </button>
+      <button data-action="returnToMenu" id="quitBtn">
+        QUIT TO MENU
+      </button>
     </div>
     <div id="loadingScreen" className="ui-panel active">
       <h1>Loading...</h1>
@@ -59,8 +65,17 @@ const layout = (
     </div>
     <div id="gameOverMenu" className="ui-panel">
       <h2>Game Over</h2>
-      <button id="playAgainBtn">Play Again</button>
-      <button id="quitFromGameoverBtn">QUIT TO MENU</button>
+      <button data-action="start" id="playAgainBtn">
+        Play Again
+      </button>
+      <button data-action="returnToMenu" id="quitFromGameoverBtn">
+        MAIN MENU
+      </button>
+    </div>
+    <div id="missionCompleteMenu" className="ui-panel">
+      <h1>Mission Complete</h1>
+      <button data-action="start">Play Again</button>
+      <button data-action="returnToMenu">Main Menu</button>
     </div>
   </>
 );

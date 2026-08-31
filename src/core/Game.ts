@@ -7,6 +7,7 @@ import {
   type AppEvents,
 } from '@/core/constants';
 import { EventEmitter } from '@/core/EventEmitter';
+import { missionData } from '@/data/playerData';
 import type { Enemies } from '@/entities/Enemies';
 import { Player } from '@/entities/Player';
 import { AudioManager } from '@/managers/AudioManager';
@@ -36,6 +37,7 @@ export class Game {
   events: EventEmitter<AppEvents>;
   collisionSystem: CollisionSystem;
   collisionManager: CollisionManager;
+  enemiesKilled: number;
 
   constructor() {
     this.canvas = document.getElementById('gameCanvas')! as HTMLCanvasElement;
@@ -53,6 +55,7 @@ export class Game {
     this.collisionSystem = new CollisionSystem();
     this.collisionManager = new CollisionManager(this.collisionSystem, this.events);
     this.player = new Player();
+    this.enemiesKilled = 0;
 
     this.keys = {};
 
@@ -69,6 +72,7 @@ export class Game {
     this.events.on(EVENTS.GAME_PAUSE, () => this.pause());
     this.events.on(EVENTS.GAME_RESUME, () => this.resume());
     this.events.on(EVENTS.GAME_RETURN_TO_MENU, () => this.returnToMenu());
+    this.events.on(EVENTS.MISSION_COMPLETE, () => this.missionComplete());
 
     // Plyer relaed evens
     this.events.on(EVENTS.PLAYER_DAMAGED, (health, maxHealth) => {
@@ -78,6 +82,11 @@ export class Game {
     this.events.on(EVENTS.PLAYER_DIED, () => {
       this.events.emit(EVENTS.SOUND, 'game_over');
       this.gameOver();
+    });
+
+    this.events.on(EVENTS.ENEMY_DIED, () => {
+      this.enemiesKilled++;
+      this.events.emit(EVENTS.ENEMY_KILLED_COUNT, this.enemiesKilled);
     });
 
     this.uiManager.showPanel('mainMenu');
@@ -93,6 +102,7 @@ export class Game {
     if (this.state === GAME_STATES.PLAYING) {
       this.time += dt;
       this.uiManager.updateTimer(this.time);
+      this.checkMissionConditions();
     }
     const activeEnemies = this.enemyManager.getActiveEnemies();
 
@@ -110,15 +120,16 @@ export class Game {
   update(dt: number, activeEnemies: Enemies[]) {
     if (this.state !== GAME_STATES.PLAYING) return;
     this.player.update(dt, this.keys);
+    this.collisionManager.update(this.player, activeEnemies);
     this.enemyManager.update(dt, this.player);
     this.enemySpawner.update(dt);
-    this.collisionManager.update(this.player, activeEnemies);
   }
 
   resetGame() {
     this.player.reset();
     this.lastTime = performance.now();
     this.time = 0;
+    this.enemiesKilled = 0;
     this.enemyManager.reset();
     this.enemySpawner.reset();
   }
@@ -238,5 +249,20 @@ export class Game {
     this.player = null;
     // @ts-ignore
     this.renderSystem = null;
+  }
+
+  checkMissionConditions() {
+    if (this.state !== GAME_STATES.PLAYING) return;
+    // if (this.enemiesKilled > 2) {
+    if (this.time >= missionData.surviveTime || this.enemiesKilled >= missionData.killCount) {
+      console.log(this);
+      this.events.emit(EVENTS.MISSION_COMPLETE);
+    }
+  }
+  missionComplete() {
+    this.state = GAME_STATES.MISSION_COMPLETE;
+    this.uiManager.hideHud();
+    this.uiManager.showPanel('missionCompleteMenu');
+    this.events.emit(EVENTS.SOUND, 'mission_complete');
   }
 }

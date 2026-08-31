@@ -13,11 +13,14 @@ export const GAME_STATES = {
   PLAYING: 'playing',
   PAUSED: 'paused',
   GAME_OVER: 'gameOver',
+  MISSION_COMPLETE: 'missionComplete',
 } as const;
 
 export const ENEMY_DESPAWN_MARGIN = 200;
-export const ENEMY_SPAWN_MERGIN = 100;
+export const ENEMY_SPAWN_MARGIN = 100;
 export const ENEMY_SPAWN_INTERVAL = 2;
+export const ENEMY_HIT_INVINCIBILITY_DURATION = 1.5;
+export const PUSHBACK_DECAY = 800;
 
 export const EVENTS = {
   SOUND: 'sound',
@@ -25,6 +28,7 @@ export const EVENTS = {
   GAME_PAUSE: 'game:pause',
   GAME_RESUME: 'game:resume',
   GAME_RETURN_TO_MENU: 'game:returnToMenu',
+  MISSION_COMPLETE: 'mission:complete',
   // Player
   PLAYER_DAMAGED: 'player:damaged',
   PLAYER_DIED: 'player:died',
@@ -32,19 +36,18 @@ export const EVENTS = {
   // enemy
   ENEMY_DIED: 'enemy:died',
   ENEMY_DAMAGED: 'enemy:damaged',
+  ENEMY_KILLED_COUNT: 'enemy:killedCount',
 } as const;
 
-export type AppEvents = {
+type TEvents = typeof EVENTS;
+type CustomAppEvents = {
   [EVENTS.SOUND]: [type: AvailableSoundNames];
-  [EVENTS.GAME_START]: [];
-  [EVENTS.GAME_PAUSE]: [];
-  [EVENTS.GAME_RESUME]: [];
-  [EVENTS.GAME_RETURN_TO_MENU]: [];
-  // Player
-  [EVENTS.PLAYER_DAMAGED]: [health: number, maxHeahth: number];
-  [EVENTS.PLAYER_DIED]: [];
-
-  // Enemy
+  [EVENTS.PLAYER_DAMAGED]: [health: number, maxHealth: number];
   [EVENTS.ENEMY_DAMAGED]: [enemy: Enemies];
   [EVENTS.ENEMY_DIED]: [enemy: Enemies];
+  [EVENTS.ENEMY_KILLED_COUNT]: [enemyKilled: number];
+};
+
+export type AppEvents = {
+  [K in TEvents[keyof TEvents]]: K extends keyof CustomAppEvents ? CustomAppEvents[K] : [];
 };

@@ -8,13 +8,25 @@ declare module '@/utils/domFns/jsx-dev-runtime' {
   export { jsxDEV, Fragment } from '@/utils/domFns';
 }
 
+declare global {
+  namespace JSX {
+    type Element = Node;
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+    interface ElementChildrenAttribute {
+      children: {};
+    }
+  }
+}
+
 declare namespace JSX {
   type Element = globalThis.Element;
 
   /**
    * Children can still include any Node, including DocumentFragment.
    */
-  type Child = globalThis.Node | string | number | boolean | null | undefined;
+  type Child = globalThis.Node | string | number | boolean | null | undefined | Child[];
 
   interface ElementChildrenAttribute {
     children: {};

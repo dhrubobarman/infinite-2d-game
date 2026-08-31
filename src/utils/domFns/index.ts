@@ -1,4 +1,12 @@
-type Child = Node | string | number | boolean | null | undefined | Child[];
+export type Child = Node | Element | string | number | boolean | null | undefined | Child[];
+
+type Props = {
+  style?: Partial<CSSStyleDeclaration>;
+  children?: Child;
+  [key: string]: any;
+};
+
+// ... appendChild, h, Fragment implementation ...
 
 function appendChild(parent: Node, child: Child): void {
   if (child == null || child === false || child === true) return;
@@ -16,14 +24,7 @@ function appendChild(parent: Node, child: Child): void {
   parent.appendChild(child);
 }
 
-type Props = {
-  style?: Partial<CSSStyleDeclaration>;
-  children?: Child;
-  [key: string]: any;
-};
-
 export function h(tag: any, props?: Props): Node {
-  // Function component support
   if (typeof tag === 'function') {
     return tag(props ?? {});
   }
@@ -31,7 +32,26 @@ export function h(tag: any, props?: Props): Node {
   const element = document.createElement(tag);
   const { style, children, ...rest } = props ?? {};
 
-  Object.assign(element, rest);
+  for (const [key, value] of Object.entries(rest)) {
+    if (value == null) continue;
+
+    // Handle dataset properties specifically
+    if (key.startsWith('data-')) {
+      element.setAttribute(key, String(value));
+    }
+    // Handle inline event handlers (e.g. onClick -> element.onclick)
+    else if (key.startsWith('on') && typeof value === 'function') {
+      element.addEventListener(key.substring(2).toLowerCase(), value);
+    }
+    // Handle standard mapped DOM properties (id, className, innerText, etc.)
+    else if (key in element) {
+      (element as any)[key] = value;
+    }
+    // Fallback for any other HTML attributes
+    else {
+      element.setAttribute(key, String(value));
+    }
+  }
 
   if (style) {
     Object.assign(element.style, style);
