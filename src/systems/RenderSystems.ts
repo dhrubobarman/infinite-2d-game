@@ -3,6 +3,7 @@ import { Player } from '@/entities/Player';
 import type { ImageManager } from '@/managers/ImageManager';
 import { GAME_HEIGHT, GAME_STATES, GAME_WIDTH, GRID_SIZE } from '@/core/constants';
 import type { Enemy } from '@/entities/Enemy';
+import type { Enemies } from '@/entities/Enemies';
 
 const FLASH_MIN_ALPHA = 0.1;
 const FLASH_ALPHA_RANGE = 0.8;
@@ -23,7 +24,7 @@ export class RenderSystem {
     this.imageManager = imageManager;
   }
 
-  render(state: Game['state'], player: Player, enemies: Enemy[] = []) {
+  render(state: Game['state'], player: Player, enemies: Enemy[] = [], debug = false) {
     if (state === GAME_STATES.MENU) {
       this.renderMenuBackground();
     } else {
@@ -31,6 +32,9 @@ export class RenderSystem {
       this.renderGrid();
       this.renderEnemies(enemies);
       this.renderPlayer(player);
+      if (debug) {
+        this.renderDebugOverlay(player, enemies);
+      }
     }
   }
   renderPlayer(player: Player) {
@@ -111,5 +115,40 @@ export class RenderSystem {
   renderMenuBackground() {
     this.ctx.fillStyle = '#0f3460';
     this.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+  }
+  renderDebugOverlay(player: Player, enemies: Enemies[]) {
+    this.ctx.save();
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeStyle = 'green';
+    this.ctx.beginPath();
+
+    // Player circle
+    this.ctx.arc(
+      player.x + player.width * 0.5,
+      player.y + player.height * 0.5,
+      player.collisionRadius,
+      0,
+      Math.PI * 2
+    );
+
+    // Enemy circles
+    for (const enemy of enemies) {
+      if (!enemy.active) continue;
+      this.ctx.moveTo(
+        enemy.x + enemy.width * 0.5 + enemy.collisionRadius,
+        enemy.y + enemy.height * 0.5
+      );
+      this.ctx.arc(
+        enemy.x + enemy.width * 0.5,
+        enemy.y + enemy.height * 0.5,
+        enemy.collisionRadius,
+        0,
+        Math.PI * 2
+      );
+    }
+
+    // Issue a single GPU stroke call for everything
+    this.ctx.stroke();
+    this.ctx.restore();
   }
 }

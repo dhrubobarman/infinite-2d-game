@@ -38,15 +38,17 @@ export class Game {
   collisionSystem: CollisionSystem;
   collisionManager: CollisionManager;
   enemiesKilled: number;
+  debug: boolean;
 
   constructor() {
+    this.debug = false;
     this.canvas = document.getElementById('gameCanvas')! as HTMLCanvasElement;
     this.events = new EventEmitter<AppEvents>();
     this.state = GAME_STATES.MENU;
     this.time = 0;
 
     this.imageManager = new ImageManager();
-    this.audioManager = new AudioManager();
+    this.audioManager = new AudioManager(this.events);
     this.uiManager = new UIManager(this.events);
     this.enemyManager = new EnemyManager();
     this.enemySpawner = new EnemySpawner(this.enemyManager);
@@ -63,9 +65,6 @@ export class Game {
   }
   private async init() {
     await Promise.all([this.imageManager.loadAll(), this.audioManager.loadAll()]);
-
-    // Sound events
-    this.events.on(EVENTS.SOUND, (name) => this.audioManager.play(name));
 
     // Game state events
     this.events.on(EVENTS.GAME_START, () => this.startGame());
@@ -107,7 +106,7 @@ export class Game {
     const activeEnemies = this.enemyManager.getActiveEnemies();
 
     this.update(dt, activeEnemies);
-    this.renderSystem.render(this.state, this.player, activeEnemies);
+    this.renderSystem.render(this.state, this.player, activeEnemies, this.debug);
     this.rafId = requestAnimationFrame((t) => this.gameloop(t));
   }
 
@@ -175,6 +174,10 @@ export class Game {
         this.resume();
       }
     }
+    // "`" Toggles debug mode
+    if (key === '`') {
+      this.debug = !this.debug;
+    }
   };
   private handleKeyUp = (e: KeyboardEvent) => {
     this.keys[e.key.toLowerCase()] = false;
@@ -218,6 +221,22 @@ export class Game {
       this.canvas.style.margin = `${CANVAS_MARGIN}px`;
     });
   }
+
+  checkMissionConditions() {
+    if (this.state !== GAME_STATES.PLAYING) return;
+    // if (this.enemiesKilled > 2) {
+    if (this.time >= missionData.surviveTime || this.enemiesKilled >= missionData.killCount) {
+      console.log(this);
+      this.events.emit(EVENTS.MISSION_COMPLETE);
+    }
+  }
+  missionComplete() {
+    this.state = GAME_STATES.MISSION_COMPLETE;
+    this.uiManager.hideHud();
+    this.uiManager.showPanel('missionCompleteMenu');
+    this.events.emit(EVENTS.SOUND, 'mission_complete');
+  }
+
   destroy() {
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
@@ -249,20 +268,5 @@ export class Game {
     this.player = null;
     // @ts-ignore
     this.renderSystem = null;
-  }
-
-  checkMissionConditions() {
-    if (this.state !== GAME_STATES.PLAYING) return;
-    // if (this.enemiesKilled > 2) {
-    if (this.time >= missionData.surviveTime || this.enemiesKilled >= missionData.killCount) {
-      console.log(this);
-      this.events.emit(EVENTS.MISSION_COMPLETE);
-    }
-  }
-  missionComplete() {
-    this.state = GAME_STATES.MISSION_COMPLETE;
-    this.uiManager.hideHud();
-    this.uiManager.showPanel('missionCompleteMenu');
-    this.events.emit(EVENTS.SOUND, 'mission_complete');
   }
 }

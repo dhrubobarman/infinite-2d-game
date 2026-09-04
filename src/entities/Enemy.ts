@@ -6,7 +6,6 @@ import type { Player } from '@/entities/Player';
 
 export class Enemy extends Enemies {
   facingLeft: boolean;
-
   constructor(data: EnemyData, behaviour: Behaviours) {
     super(data, behaviour);
     this.facingLeft = false;

@@ -1,9 +1,17 @@
+import { EVENTS, type AppEvents } from '@/core/constants';
+import type { EventEmitter } from '@/core/EventEmitter';
 import { availableSounds, type AvailableSoundNames } from '@/data/audioData';
 
 export class AudioManager {
   sounds: Record<string, { audio: HTMLAudioElement; loaded: boolean }>;
-  constructor() {
+  constructor(events: EventEmitter<AppEvents>) {
     this.sounds = {};
+    this.registerEvents(events);
+  }
+  private registerEvents(events: EventEmitter<AppEvents>) {
+    events.on(EVENTS.SOUND, (name) => this.play(name));
+    events.on(EVENTS.ENEMY_DAMAGED, (enemy) => this.play(enemy.data?.sounds?.hit));
+    events.on(EVENTS.ENEMY_DIED, (enemy) => this.play(enemy.data?.sounds?.death));
   }
   load(name: string, path: string): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
@@ -24,6 +32,7 @@ export class AudioManager {
     });
   }
   play(name: AvailableSoundNames) {
+    if (!name) return;
     const sound = this.sounds[name]?.loaded ? this.sounds[name] : null;
     if (sound) {
       sound.audio.currentTime = 0;

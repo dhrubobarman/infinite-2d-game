@@ -5,11 +5,12 @@ export const availableSounds = [
   { name: 'button_hover', path: './audio/button_hover.mp3' },
   { name: 'player_hurt', path: './audio/player_hurt.mp3' },
   { name: 'game_over', path: './audio/game_over.mp3' },
+  { name: 'mission_complete', path: './audio/mission_complete.mp3' },
+  // Enemy Sounds
   { name: 'enemy_drifter_death', path: './audio/enemy_drifter_death.mp3' },
   { name: 'enemy_drifter_hit', path: './audio/enemy_drifter_hit.mp3' },
   { name: 'enemy_seeker_death', path: './audio/enemy_seeker_death.mp3' },
   { name: 'enemy_seeker_hit', path: './audio/enemy_seeker_hit.mp3' },
-  { name: 'mission_complete', path: './audio/mission_complete.mp3' },
 ] as const;
 
 export type AvailableSoundNames = (typeof availableSounds)[number]['name'];
