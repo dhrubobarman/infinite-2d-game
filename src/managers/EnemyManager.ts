@@ -1,6 +1,6 @@
 import { enemyData } from '@/data/enemyData';
 import type { EnemyType } from '@/data/types';
-import { BehaviourFactory } from '@/entities/behaviours/BehaviourFactory';
+import { EnemyBehaviourFactory } from '@/entities/behaviours/enemy/EnemyBehaviourFactory';
 import { Enemy } from '@/entities/Enemy';
 import type { Player } from '@/entities/Player';
 import { ObjectPooler } from '@/utils/ObjectPooler';
@@ -16,7 +16,7 @@ export class EnemyManager {
       const typedType = type as keyof typeof enemyData;
       this.pools[typedType] = new ObjectPooler(() => {
         const data = enemyData[typedType];
-        const behaviour = BehaviourFactory.createBehaviour(data.behaviourType || 'seek');
+        const behaviour = EnemyBehaviourFactory.createBehaviour(data.behaviourType || 'seek');
 
         return new Enemy(data, behaviour);
       }, ENEMY_POOL_SIZE);

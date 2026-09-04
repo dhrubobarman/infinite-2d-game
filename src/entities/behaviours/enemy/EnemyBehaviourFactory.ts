@@ -1,11 +1,11 @@
 import type { Behaviours } from '@/entities/behaviours/Behaviours';
-import { DriftBehaviour } from '@/entities/behaviours/DriftBehaviour';
-import { SeekBehaviour } from '@/entities/behaviours/SeekBehaviour';
+import { DriftBehaviour } from '@/entities/behaviours/enemy/DriftBehaviour';
+import { SeekBehaviour } from '@/entities/behaviours/enemy/SeekBehaviour';
 
-export type BehaviourTypes = 'seek' | 'drift';
+export type EnemyBehaviourTypes = 'seek' | 'drift';
 
-export class BehaviourFactory {
-  static createBehaviour(behaviourType: BehaviourTypes): Behaviours {
+export class EnemyBehaviourFactory {
+  static createBehaviour(behaviourType: EnemyBehaviourTypes): Behaviours {
     switch (behaviourType) {
       case 'seek':
         return new SeekBehaviour();

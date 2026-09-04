@@ -1,6 +1,6 @@
 import type { AvailableSoundNames } from '@/data/audioData';
 import type { enemyData } from '@/data/enemyData';
-import type { BehaviourTypes } from '@/entities/behaviours/BehaviourFactory';
+import type { EnemyBehaviourTypes } from '@/entities/behaviours/enemy/EnemyBehaviourFactory';
 
 export type EnemyData = {
   width: number;
@@ -9,7 +9,7 @@ export type EnemyData = {
   health: number;
   damage: number;
   collisionRadius: number;
-  behaviourType?: BehaviourTypes;
+  behaviourType?: EnemyBehaviourTypes;
   color: string;
   image: string;
   pushbackForce: number;

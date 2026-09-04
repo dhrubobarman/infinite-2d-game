@@ -6,7 +6,7 @@ import {
   PUSHBACK_DECAY,
 } from '@/core/constants';
 import type { EnemyData } from '@/data/types';
-import type { BehaviourTypes } from '@/entities/behaviours/BehaviourFactory';
+import type { EnemyBehaviourTypes } from '@/entities/behaviours/enemy/EnemyBehaviourFactory';
 import type { Behaviours } from '@/entities/behaviours/Behaviours';
 import type { Player } from '@/entities/Player';
 
@@ -20,7 +20,7 @@ export class Enemy {
   damage: number;
   collisionRadius: number;
   active: boolean;
-  behaviourType: BehaviourTypes;
+  behaviourType: EnemyBehaviourTypes;
   x: number;
   y: number;
   behaviour: Behaviours;
