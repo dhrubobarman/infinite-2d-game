@@ -8,7 +8,7 @@ import {
 } from '@/core/constants';
 import { EventEmitter } from '@/core/EventEmitter';
 import { missionData } from '@/data/playerData';
-import type { Enemies } from '@/entities/Enemies';
+import type { Enemy } from '@/entities/Enemy';
 import { Player } from '@/entities/Player';
 import { AudioManager } from '@/managers/AudioManager';
 import { CollisionManager } from '@/managers/CollisionManager';
@@ -116,7 +116,7 @@ export class Game {
     this.uiManager.showPanel('gameOverMenu');
   }
 
-  update(dt: number, activeEnemies: Enemies[]) {
+  update(dt: number, activeEnemies: Enemy[]) {
     if (this.state !== GAME_STATES.PLAYING) return;
     this.player.update(dt, this.keys);
     this.collisionManager.update(this.player, activeEnemies);

@@ -1,5 +1,5 @@
 import { Behaviours } from '@/entities/behaviours/Behaviours';
-import type { Enemies } from '@/entities/Enemies';
+import type { Enemy } from '@/entities/Enemy';
 import type { Player } from '@/entities/Player';
 
 export class DriftBehaviour extends Behaviours {
@@ -14,7 +14,7 @@ export class DriftBehaviour extends Behaviours {
     this.changeTimer = 0;
     this.changeInterval = 2;
   }
-  override update(enemy: Enemies, dt: number, player: Player) {
+  override update(enemy: Enemy, dt: number, player: Player) {
     void player;
     this.changeTimer += dt;
     if (this.changeTimer >= this.changeInterval) {

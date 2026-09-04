@@ -1,6 +1,6 @@
 import { EVENTS, type AppEvents } from '@/core/constants';
 import type { EventEmitter } from '@/core/EventEmitter';
-import type { Enemies } from '@/entities/Enemies';
+import type { Enemy } from '@/entities/Enemy';
 import type { Player } from '@/entities/Player';
 import type { CollisionSystem } from '@/systems/CollisionSystem';
 
@@ -12,11 +12,11 @@ export class CollisionManager {
     this.events = events;
   }
 
-  update(player: Player, enemies: Enemies[]) {
+  update(player: Player, enemies: Enemy[]) {
     this.checkPlayerVsEnemies(player, enemies);
   }
 
-  checkPlayerVsEnemies(player: Player, enemies: Enemies[]) {
+  checkPlayerVsEnemies(player: Player, enemies: Enemy[]) {
     for (const enemy of enemies) {
       if (!enemy.active) continue;
 

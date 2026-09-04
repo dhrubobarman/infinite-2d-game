@@ -1,5 +1,5 @@
 import type { AvailableSoundNames } from '@/data/audioData';
-import type { Enemies } from '@/entities/Enemies';
+import type { Enemy } from '@/entities/Enemy';
 
 export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
@@ -43,8 +43,8 @@ type TEvents = typeof EVENTS;
 type CustomAppEvents = {
   [EVENTS.SOUND]: [type: AvailableSoundNames];
   [EVENTS.PLAYER_DAMAGED]: [health: number, maxHealth: number];
-  [EVENTS.ENEMY_DAMAGED]: [enemy: Enemies];
-  [EVENTS.ENEMY_DIED]: [enemy: Enemies];
+  [EVENTS.ENEMY_DAMAGED]: [enemy: Enemy];
+  [EVENTS.ENEMY_DIED]: [enemy: Enemy];
   [EVENTS.ENEMY_KILLED_COUNT]: [enemyKilled: number];
 };
 

@@ -3,7 +3,6 @@ import { Player } from '@/entities/Player';
 import type { ImageManager } from '@/managers/ImageManager';
 import { GAME_HEIGHT, GAME_STATES, GAME_WIDTH, GRID_SIZE } from '@/core/constants';
 import type { Enemy } from '@/entities/Enemy';
-import type { Enemies } from '@/entities/Enemies';
 
 const FLASH_MIN_ALPHA = 0.1;
 const FLASH_ALPHA_RANGE = 0.8;
@@ -116,7 +115,7 @@ export class RenderSystem {
     this.ctx.fillStyle = '#0f3460';
     this.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
   }
-  renderDebugOverlay(player: Player, enemies: Enemies[]) {
+  renderDebugOverlay(player: Player, enemies: Enemy[]) {
     this.ctx.save();
     this.ctx.lineWidth = 1;
     this.ctx.strokeStyle = 'green';

@@ -1,13 +1,13 @@
 import { EPS } from '@/core/constants';
 import { Behaviours } from '@/entities/behaviours/Behaviours';
-import type { Enemies } from '@/entities/Enemies';
+import type { Enemy } from '@/entities/Enemy';
 import type { Player } from '@/entities/Player';
 
 export class SeekBehaviour extends Behaviours {
   constructor() {
     super();
   }
-  override update(enemy: Enemies, dt: number, player: Player) {
+  override update(enemy: Enemy, dt: number, player: Player) {
     const dx = player.x + player.width / 2 - (enemy.x + enemy.width / 2);
     const dy = player.y + player.height / 2 - (enemy.y + enemy.height / 2);
     const len = Math.sqrt(dx * dx + dy * dy);
